@@ -74,6 +74,19 @@ bool loadPlugin(fs::path dllPath) {
     if (lib) {
         auto pluginFileName = canonical(dllPath).filename().u8string();
         LOG("Plugin " + pluginFileName + " loaded");
+        //Call onPostInit, don't delete
+        auto fn = GetProcAddress(lib, "onPostInit");
+        if (!fn) {
+            // std::wcerr << "Warning!!! mod" << name << " doesnt have a onPostInit\n";
+        } else {
+            try {
+                ((void (*)())fn)();
+            } catch (...) {
+                std::wcerr << "[Error] plugin " << pluginFileName.c_str() << " throws an exception when onPostInit\n";
+                //std::this_thread::sleep_for(std::chrono::seconds(10));
+                //exit(1);
+            }
+        }
         if (loadingPluginName.empty()) {
             LOG.p<LOGLVL::Error>(pluginFileName, " is not registered!");
             loadingPluginName = pluginFileName;
