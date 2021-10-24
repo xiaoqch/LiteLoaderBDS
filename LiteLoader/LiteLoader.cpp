@@ -1,6 +1,8 @@
 #include "pch.h"
 using std::vector;
-Logger<stdio_commit>        LOG(stdio_commit{"[LL] "});
+Logger<stdio_commit> LOG(stdio_commit{"[LL] "});
+
+namespace fs = std::filesystem;
 
 static void printErrorMessage() {
     DWORD error_message_id = ::GetLastError();
@@ -31,7 +33,7 @@ static vector<std::wstring> getPreloadList() {
     //若在preload.conf中，则不加载
     vector<std::wstring> preload_list{};
 
-    if (std::filesystem::exists(std::filesystem::path(TEXT(".\\plugins\\preload.conf")))) {
+    if (fs::exists(fs::path(TEXT(".\\plugins\\preload.conf")))) {
         std::wifstream dllList(TEXT(".\\plugins\\preload.conf"));
         if (dllList) {
             std::wstring dllName;
@@ -53,40 +55,50 @@ static vector<std::wstring> getPreloadList() {
 
 extern std::string                             loadingPluginName;
 extern std::unordered_map<std::string, Plugin> plugins;
-static void loadPlugins() {
+
+bool loadPlugin(fs::path dllPath) {
+    vector<std::wstring> preload_list = getPreloadList();
+    bool loaded = false;
+    for (auto& p : preload_list)
+        if (p.find(std::wstring(dllPath)) != std::wstring::npos) {
+            loaded = true;
+            break;
+        }
+    for (auto& [name, plugin] : plugins) {
+        if (plugin.filePath == canonical(dllPath).wstring())
+            loaded = true;
+    }
+    if (loaded)
+        return false;
+    auto lib = LoadLibrary(dllPath.c_str());
+    if (lib) {
+        auto pluginFileName = canonical(dllPath).filename().u8string();
+        LOG("Plugin " + pluginFileName + " loaded");
+        if (loadingPluginName.empty()) {
+            LOG.p<LOGLVL::Error>(pluginFileName, " is not registered!");
+            loadingPluginName = pluginFileName;
+            registerPlugin(pluginFileName, "unknown plugin", "unknown");
+        }
+        completePluginInfo(loadingPluginName, canonical(dllPath).wstring(), lib);
+        loadingPluginName.clear();
+        return true;
+    } else {
+        LOG("Error when loading " + dllPath.filename().u8string() + "");
+        printErrorMessage();
+        return false;
+    }
+}
+void loadPlugins() {
     fixPluginsLibDir();
-    std::filesystem::create_directory("plugins");
-    std::filesystem::directory_iterator ent("plugins");
-    short                               pluginCount  = 0;
-    vector<std::wstring>                preload_list = getPreloadList();
+    fs::create_directory("plugins");
+    fs::directory_iterator ent("plugins");
+    short                  pluginCount  = 0;
 
     LOG("Loading plugins");
     for (auto& i : ent) {
         if (i.is_regular_file() && i.path().extension().u8string() == ".dll") {
-            bool loaded = false;
-            for (auto& p : preload_list)
-                if (p.find(std::wstring(i.path())) != std::wstring::npos) {
-                    loaded = true;
-                    break;
-                }
-            if (loaded)
-                continue;
-            auto lib = LoadLibrary(i.path().c_str());
-            if (lib) {
+            if (loadPlugin(i.path()))
                 pluginCount++;
-                auto pluginFileName = canonical(i.path()).filename().u8string();
-                LOG("Plugin " + pluginFileName + " loaded");
-                if (loadingPluginName.empty()) {
-                    LOG.p<LOGLVL::Error>(pluginFileName, " is not registered!");
-                    loadingPluginName = pluginFileName;
-                    registerPlugin(pluginFileName, "unknown plugin", "unknown");
-                }
-                completePluginInfo(loadingPluginName, canonical(i.path()).wstring(), lib);
-                loadingPluginName.clear();
-            } else {
-                LOG("Error when loading " + i.path().filename().u8string() + "");
-                printErrorMessage();
-            }
         }
     }
     for (auto& [name, plugin] : plugins) {

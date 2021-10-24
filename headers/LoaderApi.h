@@ -28,8 +28,8 @@ LIAPI std::string getServerVersion();
 // @param git *git仓库(链接)
 // @param license *插件许可证
 // @param website *网站
-// @return 是否成功(失败则为插件名重复)
-LIAPI bool registerPlugin(std::string name, std::string introduction, std::string version,
+// @throws std::exception 插件名重复
+LIAPI void registerPlugin(std::string name, std::string introduction, std::string version,
                           std::string git = "", std::string license = "", std::string website = "");
 // @param name 插件名
 // @return 若未找到则返回0
