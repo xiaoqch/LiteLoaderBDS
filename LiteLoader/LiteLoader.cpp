@@ -19,9 +19,9 @@ static void printErrorMessage() {
     LocalFree(message_buffer);
 }
 
-static void fixPluginsLibDir() {  // add plugins folder to path to fix dependent problem
-    WCHAR *buffer = new WCHAR[8192];
-    auto sz       = GetEnvironmentVariableW(TEXT("PATH"), buffer, 8192);
+static void fixPluginsLibDir() { // add plugins folder to path to fix dependent problem
+    WCHAR*       buffer = new WCHAR[8192];
+    auto         sz     = GetEnvironmentVariableW(TEXT("PATH"), buffer, 8192);
     std::wstring PATH{buffer, sz};
     sz = GetCurrentDirectoryW(8192, buffer);
     std::wstring CWD{buffer, sz};
@@ -101,31 +101,17 @@ void loadPlugins() {
                 pluginCount++;
         }
     }
-    for (auto& [name, plugin] : plugins) {
-        auto fn = GetProcAddress(plugin.handler, "onPostInit");
-        if (!fn) {
-            // std::wcerr << "Warning!!! mod" << name << " doesnt have a onPostInit\n";
-        } else {
-            try {
-                ((void (*)())fn)();
-            } catch (...) {
-                std::wcerr << "[Error] plugin " << name.c_str() << " throws an exception when onPostInit\n";
-                std::this_thread::sleep_for(std::chrono::seconds(10));
-                exit(1);
-            }
-        }
-    }
     LOG(std::to_string(pluginCount) + " plugin(s) loaded");
 }
 
 vector<function<void(PostInitEV)>> Post_init_call_backs;
-LIAPI void Event::addEventListener(function<void(PostInitEV)> callback) {
+LIAPI void                         Event::addEventListener(function<void(PostInitEV)> callback) {
     Post_init_call_backs.push_back(callback);
 }
 std::wstring s2ws(string str) {
     std::wstring result;
-    int    len    = MultiByteToWideChar(CP_ACP, 0, str.c_str(), str.size(), NULL, 0);
-    TCHAR* buffer = new TCHAR[(long)len + 1];
+    int          len    = MultiByteToWideChar(CP_ACP, 0, str.c_str(), str.size(), NULL, 0);
+    TCHAR*       buffer = new TCHAR[(long)len + 1];
     MultiByteToWideChar(CP_ACP, 0, str.c_str(), str.size(), buffer, len);
     buffer[len] = '\0';
     result.append(buffer);
@@ -152,9 +138,9 @@ static void entry(bool fix_cwd) {
         FixUpCWD();
     }
     loadPlugins();
-    XIDREG::initAll();  // Initialize the xuid database
-    registerCommands(); // Register built-in commands
-    Event::addEventListener([](ServerStartedEV) {  // Server started event
+    XIDREG::initAll();                            // Initialize the xuid database
+    registerCommands();                           // Register built-in commands
+    Event::addEventListener([](ServerStartedEV) { // Server started event
         startWBThread();
         LOG("LiteLoader is distributed under the GPLv3 License");
         LCID           localeID = GetUserDefaultLCID();
@@ -165,7 +151,7 @@ static void entry(bool fix_cwd) {
         checkUpdate();
     });
 
-    PostInitEV post_init_ev;  // Register PostInit event
+    PostInitEV post_init_ev; // Register PostInit event
     for (size_t count = 0; count < Post_init_call_backs.size(); count++) {
         Post_init_call_backs[count](post_init_ev);
     }
@@ -192,9 +178,9 @@ std::string TCHAR2STRING(TCHAR* str) {
     return strstr;
 }
 
-THook(int, "main", int a, void *b) {
+THook(int, "main", int a, void* b) {
     std::ios::sync_with_stdio(false);
-    HWND  hwnd  = GetConsoleWindow();
+    HWND         hwnd = GetConsoleWindow();
     std::wstring s    = L"LiteLoaderBDS " + s2ws(LITELOADER_VERSION);
     SetWindowText(hwnd, s.c_str());
     entry(a > 1);

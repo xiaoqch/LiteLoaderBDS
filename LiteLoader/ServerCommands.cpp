@@ -3,7 +3,8 @@
 Logger<stdio_commit> LOG1(stdio_commit{"[LL] "});
 
 void checkUpdate();
-bool versionCommand(CommandOrigin const &, CommandOutput &outp) {
+unsigned short getBuiltinCommandLevel();
+bool versionCommand(CommandOrigin const& ori, CommandOutput& outp) {
     outp.success("The server is running Bedrock Dedicated Server " + loaderapi::getServerVersion() + " with LiteLoaderBDS " +
                  LITELOADER_VERSION + "\nGithub: https://github.com/LiteLDev/LiteLoaderBDS");
     return true;
@@ -123,7 +124,7 @@ bool pluginsCommand(CommandOrigin const& ori, CommandOutput& outp,
 }
 
 void registerCommands() {
-    Event::addEventListener([](RegCmdEV ev) {  // Register commands
+    Event::addEventListener([](RegCmdEV ev) { // Register commands
         CMDREG::SetCommandRegistry(ev.CMDRg);
 
         std::string server_version = loaderapi::getServerVersion();
