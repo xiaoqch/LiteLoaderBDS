@@ -83,7 +83,7 @@ bool loadPlugin(fs::path dllPath) {
         loadingPluginName.clear();
         return true;
     } else {
-        LOG("Error when loading " + dllPath.filename().u8string() + "");
+        LOG.p<LOGLVL::Error>("Error when loading " + dllPath.filename().u8string() + "");
         printErrorMessage();
         return false;
     }

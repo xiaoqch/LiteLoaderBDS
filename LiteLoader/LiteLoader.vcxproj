@@ -149,6 +149,7 @@
       <LanguageStandard>stdcpp17</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <AdditionalIncludeDirectories>C:\Users\Administrator\Desktop\LiteLoaderMain\headers;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <ExceptionHandling>Async</ExceptionHandling>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -444,6 +445,7 @@
     <ClInclude Include="..\headers\mc\Player.h" />
     <ClInclude Include="..\headers\mc\VanillaBlocks.h" />
     <ClInclude Include="..\headers\Plugins.h" />
+    <ClInclude Include="..\headers\seh_exception.hpp" />
     <ClInclude Include="..\headers\stl\Bstream.h" />
     <ClInclude Include="..\headers\stl\CBStorage.h" />
     <ClInclude Include="..\headers\stl\format.h" />
