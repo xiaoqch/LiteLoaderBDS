@@ -4,6 +4,8 @@ std::unordered_map<std::string, Plugin> plugins;
 
 std::string loadingPluginName;
 
+std::vector<std::function<void(Plugin)>> unloadCallbacks;
+
 bool registerPlugin(
     std::string name, 
     std::string introduction, 
@@ -40,10 +42,15 @@ bool hasPlugin(std::string name) {
     return plugins.count(name);
 }
 
-void loaderapi::registerPlugin(std::string name, std::string introduction, std::string version,
+Plugin* loaderapi::registerPlugin(std::string name, std::string introduction, std::string version,
                                std::string git, std::string license, std::string website) {
     loadingPluginName = name;
-    ::registerPlugin(name, introduction, version, git, license, website);
+    bool res = ::registerPlugin(name, introduction, version, git, license, website);
+    if (res) {
+        return &plugins[name];
+    } else {
+        return nullptr;
+    }
 }
 
 Plugin* loaderapi::tryGetPluginByName(std::string name) {
