@@ -1035,6 +1035,9 @@
     <ClInclude Include="..\headers\Plugins.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="..\headers\seh_exception.hpp">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
