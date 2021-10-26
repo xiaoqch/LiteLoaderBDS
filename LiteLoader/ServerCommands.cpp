@@ -10,7 +10,11 @@ bool versionCommand(CommandOrigin const& ori, CommandOutput& outp) {
     return true;
 }
 
-bool pluginsCommand(CommandOrigin const&, CommandOutput& outp, optional<std::string> pl) {
+bool pluginsCommand(CommandOrigin const& ori, CommandOutput& outp, optional<std::string> pl) {
+    if (ori.getPermissionsLevel < getBuiltinCommandLevel()) {
+        outp.error("You have no permission to use this command");
+        return false;
+    }
     if (pl.set) {
         std::string name   = pl.val();
         auto        plugin = loaderapi::tryGetPluginByName(name);
@@ -54,13 +58,6 @@ bool pluginsCommand(CommandOrigin const&, CommandOutput& outp, optional<std::str
 void registerCommands() {
     Event::addEventListener([](RegCmdEV ev) { // Register commands
         CMDREG::SetCommandRegistry(ev.CMDRg);
-
-        std::string server_version = loaderapi::getServerVersion();
-        if (server_version.find("1.17.1") != std::string::npos) {
-            LOG1("Are you sure you want to run LiteLoader" + loaderapi::getLoaderVersion() + " with BDS " + server_version + "?");
-            system("pause");
-            return;
-        }
         MakeCommand("version", "Get the version of this server", 0);
         CmdOverload(version, versionCommand);
 
