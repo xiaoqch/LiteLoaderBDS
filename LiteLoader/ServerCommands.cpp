@@ -11,7 +11,7 @@ bool versionCommand(CommandOrigin const& ori, CommandOutput& outp) {
 }
 
 bool pluginsCommand(CommandOrigin const& ori, CommandOutput& outp, optional<std::string> pl) {
-    if (ori.getPermissionsLevel < getBuiltinCommandLevel()) {
+    if (ori.getPermissionsLevel() < getBuiltinCommandLevel()) {
         outp.error("You have no permission to use this command");
         return false;
     }
