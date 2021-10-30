@@ -1,4 +1,5 @@
 #include "pch.h"
+#include <seh_exception.hpp>
 using std::vector;
 Logger<stdio_commit> LOG(stdio_commit{"[LL] "});
 
@@ -145,6 +146,7 @@ void checkUpdate();
 void registerCommands();
 
 static void entry(bool fix_cwd) {
+    _set_se_translator(seh_exception::TranslateSEHtoCE);
     //Prohibit pop-up windows to facilitate automatic restart
     SetErrorMode(SEM_FAILCRITICALERRORS | SEM_NOGPFAULTERRORBOX | SEM_NOALIGNMENTFAULTEXCEPT);
     if (fix_cwd) {
