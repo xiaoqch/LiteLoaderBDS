@@ -88,20 +88,6 @@ bool loadPlugin(fs::path dllPath) {
         printErrorMessage();
         return false;
     }
-    for (auto& [name, plugin] : plugins) {
-        auto fn = GetProcAddress(plugin.handler, "onPostInit");
-        if (!fn) {
-            // std::wcerr << "Warning!!! mod" << name << " doesnt have a onPostInit\n";
-        } else {
-            try {
-                ((void (*)())fn)();
-            } catch (...) {
-                std::wcerr << "[Error] plugin " << name.c_str() << " throws an exception when onPostInit\n";
-                std::this_thread::sleep_for(std::chrono::seconds(10));
-                exit(1);
-            }
-        }
-    }
 }
 void loadPlugins() {
     fixPluginsLibDir();
@@ -117,6 +103,20 @@ void loadPlugins() {
         }
     }
     LOG(std::to_string(pluginCount) + " plugin(s) loaded");
+    for (auto& [name, plugin] : plugins) {
+        auto fn = GetProcAddress(plugin.handler, "onPostInit");
+        if (!fn) {
+            // std::wcerr << "Warning!!! mod" << name << " doesnt have a onPostInit\n";
+        } else {
+            try {
+                ((void (*)())fn)();
+            } catch (...) {
+                std::wcerr << "[Error] plugin " << name.c_str() << " throws an exception when onPostInit\n";
+                std::this_thread::sleep_for(std::chrono::seconds(10));
+                exit(1);
+            }
+        }
+    }
 }
 
 vector<function<void(PostInitEV)>> Post_init_call_backs;
