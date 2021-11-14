@@ -1,6 +1,6 @@
 name: Build LiteLoader
 
-on: [push, pull_request, workflow_dispatch]
+on: [push]
 
 env:
   SOLUTION_FILE_PATH: .
@@ -31,7 +31,6 @@ jobs:
       working-directory: ${{env.GITHUB_WORKSPACE}}
       run: |
         mkdir D:/out
-        mkdir D:/out/release
         mkdir D:/out/dev
         mkdir D:/out/dev/lib
         mkdir D:/out/dev/pdb
@@ -48,32 +47,20 @@ jobs:
     - name: Copy SymDB2 Gen
       working-directory: ${{env.GITHUB_WORKSPACE}}
       run: |
-        cp -a Tool/SymDB2.exe D:/out/release
+        cp -a Tool/SymDB2.exe D:/out/dev
       shell: bash
-    
+      
     - name: Copy Output Files
       working-directory: ${{env.GITHUB_WORKSPACE}}
       run: |
-        cp -a x64/Release/*.dll D:/out/release
-        cp -a D:/cc/x64_release/ChakraCore.dll D:/out/release   
-      shell: bash
-      
-    - name: Copy DevOutput Files
-      working-directory: ${{env.GITHUB_WORKSPACE}}
-      run: |
-        cp -a D:/out/release/* D:/out/dev/
+        cp -a x64/Release/*.dll D:/out/dev
+        cp -a D:/cc/x64_release/ChakraCore.dll D:/out/dev
         cp -a x64/Release/*.lib D:/out/dev/lib
         cp -a x64/Release/*.pdb D:/out/dev/pdb
         cp -a headers/* D:/out/dev/headers
       shell: bash
 
-    - name: Upload Release
-      uses: actions/upload-artifact@v1.0.0
-      with:
-        name: LiteLoader
-        path: D:/out/release
-
-    - name: Upload DevPack
+    - name: Upload Artifact
       uses: actions/upload-artifact@v1.0.0
       with:
         name: LiteLoader
