@@ -169,7 +169,7 @@ THook(bool, "?executeCommand@MinecraftCommands@@QEBA?AUMCRESULT@@V?$shared_ptr@V
     if (sp) {
         try {
             string cmd = x->getCmd();
-            if (cmd.at(0) == '/') {
+            if (!cmd.empty() && cmd.at(0) == '/') {
                 cmd = cmd.substr(1, cmd.size() - 1);
             }
             PlayerUseCmdEV player_use_cmd_event = {sp, cmd, result};
