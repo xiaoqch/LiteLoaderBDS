@@ -31,9 +31,9 @@ jobs:
       id: build
       run: |
         echo ::set-output name=tag::${GITHUB_REF:10}
-        echo  >> LiteLoader/headers/LoaderApi.h
+        echo  >> headers/LoaderApi.h
         git log -1 --format='#define LITELOADER_VERSION_GITHUB LITELOADER_VERSION"-Ci-%h_%at"' >> LiteLoader/Header/LoaderApi.h
-        cat LiteLoader/headers/LoaderApi.h
+        cat headers/LoaderApi.h
         MSBuild.exe ./LiteLoader.sln -property:Configuration=Release
       shell: bash
     
