@@ -2,3 +2,9 @@
 .vs/
 LiteLoader/x64/
 Chakra/x64/
+RELEASE/
+SDK/
+Tools/*
+LiteLoader/Header
+LiteLoader/Kernel
+LiteLoader/Lib
