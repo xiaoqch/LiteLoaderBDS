@@ -13,6 +13,7 @@
 #include <MC/GameMode.hpp>
 #include <MC/HitResult.hpp>
 #include <MC/ItemActor.hpp>
+#include <MC/PistonBlockActor.hpp>
 #include <MC/ComplexInventoryTransaction.hpp>
 #include <MC/InventoryTransaction.hpp>
 #include <MC/ItemStack.hpp>
@@ -32,6 +33,7 @@
 #include <MC/VanillaBlocks.hpp>
 #include <MC/ServerPlayer.hpp>
 #include <RegCommandAPI.h>
+#include <Utils/StringHelper.h>
 #include <functional>
 #include <iostream>
 #include <string>
@@ -94,6 +96,7 @@ DeclareEventListeners(ArmorStandChangeEvent)
 DeclareEventListeners(BlockExplodeEvent)
 DeclareEventListeners(ContainerChangeEvent)
 DeclareEventListeners(PistonPushEvent)
+DeclareEventListeners(PistonTryPushEvent)
 DeclareEventListeners(RedStoneUpdateEvent)
 DeclareEventListeners(BlockExplodedEvent)
 DeclareEventListeners(LiquidSpreadEvent)
@@ -203,6 +206,8 @@ THook(void, "?handle@?$PacketHandlerDispatcherInstance@VRespawnPacket@@$0A@@@UEB
         RespawnPacket* packet = *(RespawnPacket**)pPacket;
         PlayerRespawnEvent ev{};
         ev.mPlayer = packet->getPlayerFromPacket(handler, id);
+        if (!ev.mPlayer)
+            return;
         ev.call();
     }
     IF_LISTENED_END(PlayerRespawnEvent)
@@ -217,12 +222,16 @@ THook(void, "?handle@ServerNetworkHandler@@UEAAXAEBVNetworkIdentifier@@AEBVTextP
     {
         Event::PlayerChatEvent ev{};
         ev.mPlayer = _this->getServerPlayer(*id);
+        if (!ev.mPlayer)
+            return;
+
         ev.mMessage = std::string(*(std::string*)((uintptr_t)text + 88));
 
         if (!ev.call())
             return;
+        *(std::string*)((uintptr_t)text + 88) = ev.mMessage;
     }
-    IF_LISTENED_END(PlayerChatEvent)
+    IF_LISTENED_END(PlayerChatEvent);
     return original(_this, id, text);
 }
 
@@ -238,6 +247,7 @@ public:
     bool mRespawn;
     std::unique_ptr<CompoundTag> mAgentTag;
 };
+
 THook(bool, "?requestPlayerChangeDimension@Level@@UEAAXAEAVPlayer@@V?$unique_ptr@VChangeDimensionRequest@@U?$default_delete@VChangeDimensionRequest@@@std@@@std@@@Z",
       Level* _this, Player* sp, std::unique_ptr<ChangeDimensionRequest> request)
 {
@@ -284,7 +294,7 @@ THook(void, "?sendActorSneakChanged@ActorEventCoordinator@@QEAAXAEAVActor@@_N@Z"
         ev.mIsSneaking = isSneaking;
         ev.call();
 
-        //isSneaking = ev.mIsSneaking;
+        isSneaking = ev.mIsSneaking;
     }
     IF_LISTENED_END(PlayerSneakEvent)
     return original(_this, ac, isSneaking);
@@ -304,7 +314,8 @@ THook(bool, "?attack@Player@@UEAA_NAEAVActor@@AEBW4ActorDamageCause@@@Z",
         if (!ev.call())
             return false;
 
-        //*damageCause = ev.mAttackDamage;
+        ac = ev.mTarget;
+        *damageCause = ev.mAttackDamage;
     }
     IF_LISTENED_END(PlayerAttackEvent)
     return original(_this, ac, damageCause);
@@ -1192,6 +1203,8 @@ THook(void, "?onRedstoneUpdate@RedStoneWireBlock@@UEBAXAEAVBlockSource@@AEBVBloc
         ev.mIsActivated = level != 0;
         if (!ev.call())
             return;
+
+        level = ev.mRedStonePower;
     }
     IF_LISTENED_END(RedStoneUpdateEvent)
     return original(_this, bs, bp, level, isActive);
@@ -1208,6 +1221,8 @@ THook(void, "?onRedstoneUpdate@RedstoneTorchBlock@@UEBAXAEAVBlockSource@@AEBVBlo
         ev.mIsActivated = level != 0;
         if (!ev.call())
             return;
+
+        level = ev.mRedStonePower;
     }
     IF_LISTENED_END(RedStoneUpdateEvent)
     return original(_this, bs, bp, level, isActive);
@@ -1224,6 +1239,8 @@ THook(void, "?onRedstoneUpdate@DiodeBlock@@UEBAXAEAVBlockSource@@AEBVBlockPos@@H
         ev.mIsActivated = level != 0;
         if (!ev.call())
             return;
+
+        level = ev.mRedStonePower;
     }
     IF_LISTENED_END(RedStoneUpdateEvent)
     return original(_this, bs, bp, level, isActive);
@@ -1240,6 +1257,8 @@ THook(void, "?onRedstoneUpdate@ComparatorBlock@@UEBAXAEAVBlockSource@@AEBVBlockP
         ev.mIsActivated = level != 0;
         if (!ev.call())
             return;
+
+        level = ev.mRedStonePower;
     }
     IF_LISTENED_END(RedStoneUpdateEvent)
     return original(_this, bs, bp, level, isActive);
@@ -1289,25 +1308,41 @@ THook(bool, "?_pushOutItems@Hopper@@IEAA_NAEAVBlockSource@@AEAVContainer@@AEBVVe
     return original(_this, bs, container, pos, a5);
 }
 
-/////////////////// PistonPush ///////////////////
+/////////////////// PistonTryPushEvent & PistonPushEvent ///////////////////
 THook(bool, "?_attachedBlockWalker@PistonBlockActor@@AEAA_NAEAVBlockSource@@AEBVBlockPos@@EE@Z",
-      BlockActor* _this, BlockSource* bs, BlockPos* bp, unsigned a3, unsigned a4)
+    PistonBlockActor* _this, BlockSource* bs, BlockPos* bp, char a3, char a4)
 {
-    IF_LISTENED(PistonPushEvent)
+    IF_LISTENED(PistonTryPushEvent)
     {
-
-        PistonPushEvent ev{};
-        ev.mPistonBlockInstance = Level::getBlockInstance(_this->getPosition(), bs);
+        PistonTryPushEvent ev{};
         ev.mTargetBlockInstance = Level::getBlockInstance(bp, bs);
-
         if (ev.mTargetBlockInstance.getBlock()->getTypeName() == "minecraft:air")
             return original(_this, bs, bp, a3, a4);
+
+        ev.mPistonBlockInstance = Level::getBlockInstance(_this->getPosition(), bs);
 
         if (!ev.call())
             return false;
     }
+    IF_LISTENED_END(PistonTryPushEvent)
+
+    bool res = original(_this, bs, bp, a3, a4);
+    if (!res)
+        return false;
+
+    IF_LISTENED(PistonPushEvent)
+    {
+        PistonPushEvent ev{};
+        ev.mTargetBlockInstance = Level::getBlockInstance(bp, bs);
+        if (ev.mTargetBlockInstance.getBlock()->getTypeName() == "minecraft:air")
+            return true;
+
+        ev.mPistonBlockInstance = Level::getBlockInstance(_this->getPosition(), bs);
+
+        ev.call();
+    }
     IF_LISTENED_END(PistonPushEvent)
-    return original(_this, bs, bp, a3, a4);
+    return true;
 }
 
 
@@ -1475,6 +1510,8 @@ THook(bool, "?_hurt@Mob@@MEAA_NAEBVActorDamageSource@@H_N1@Z",
             ev.mDamage = damage;
             if (!ev.call())
                 return false;
+
+            damage = ev.mDamage;
         }
     }
     IF_LISTENED_END(MobHurtEvent)
@@ -1520,59 +1557,67 @@ THook(bool, "?die@Mob@@UEAAXAEBVActorDamageSource@@@Z", Mob* mob, ActorDamageSou
 THook(void, "?explode@Explosion@@QEAAXXZ",
     void* self)
 {
-    auto pos = *(Vec3*)(QWORD*)self;
-    auto radius = *((float*)self + 3);
-    auto actor = (Actor*)*((QWORD*)self + 11);
-    auto bs = (BlockSource*)*((QWORD*)self + 12);
-    auto maxResistance = *((float*)self + 26);
-    auto genFire = (bool)*((BYTE*)self + 80);
-    auto canBreaking = (bool)*((BYTE*)self + 81);
-
-    IF_LISTENED(EntityExplodeEvent)
+    try
     {
-        if (actor)
+        auto actor = (Actor*)*((QWORD*)self + 11);
+        auto pos = *(Vec3*)(QWORD*)self;
+        auto radius = *((float*)self + 3);
+        auto bs = (BlockSource*)*((QWORD*)self + 12);
+        auto maxResistance = *((float*)self + 26);
+        auto genFire = (bool)*((BYTE*)self + 80);
+        auto canBreaking = (bool)*((BYTE*)self + 81);
+
+        IF_LISTENED(EntityExplodeEvent)
         {
-            EntityExplodeEvent ev{};
-            ev.mActor = actor;
-            ev.mBreaking = canBreaking;
-            ev.mFire = genFire;
-            ev.mMaxResistance = maxResistance;
-            ev.mPos = pos;
-            ev.mRadius = radius;
-            ev.mDimension = bs;
-            if (!ev.call())
-                return;
+            if (actor)
+            {
+                EntityExplodeEvent ev{};
+                ev.mActor = actor;
+                ev.mBreaking = canBreaking;
+                ev.mFire = genFire;
+                ev.mMaxResistance = maxResistance;
+                ev.mPos = pos;
+                ev.mRadius = radius;
+                ev.mDimension = bs;
+                if (!ev.call())
+                    return;
 
-            //*((float*)self + 3) = ev.mRadius;
-            //*((float*)self + 26) = ev.mMaxResistance;
-            //*((BYTE*)self + 80) = ev.mFire;
-            //*((BYTE*)self + 81) = ev.mBreaking;
+                *((float*)self + 3) = ev.mRadius;
+                *((float*)self + 26) = ev.mMaxResistance;
+                *((BYTE*)self + 80) = ev.mFire;
+                *((BYTE*)self + 81) = ev.mBreaking;
+            }
         }
-    }
-    IF_LISTENED_END(EntityExplodeEvent)
+        IF_LISTENED_END(EntityExplodeEvent)
 
-    IF_LISTENED(BlockExplodeEvent)
+        IF_LISTENED(BlockExplodeEvent)
+        {
+            if (!actor)
+            {
+                BlockPos bp = pos.toBlockPos();
+                BlockExplodeEvent ev{};
+                ev.mBlockInstance = Level::getBlockInstance(bp, bs);
+                ev.mBreaking = canBreaking;
+                ev.mFire = genFire;
+                ev.mMaxResistance = maxResistance;
+                ev.mRadius = radius;
+                if (!ev.call())
+                    return;
+
+                *((float*)self + 3) = ev.mRadius;
+                *((float*)self + 26) = ev.mMaxResistance;
+                *((BYTE*)self + 80) = ev.mFire;
+                *((BYTE*)self + 81) = ev.mBreaking;
+            }
+        }
+        IF_LISTENED_END(BlockExplodeEvent)
+    }
+    catch (...)
     {
-        if (!actor)
-        {
-            BlockPos bp = pos.toBlockPos();
-            BlockExplodeEvent ev{};
-            ev.mBlockInstance = Level::getBlockInstance(bp, bs);
-            ev.mBreaking = canBreaking;
-            ev.mFire = genFire;
-            ev.mMaxResistance = maxResistance;
-            ev.mRadius = radius;
-            if (!ev.call())
-                return;
-
-            //*((float*)self + 3) = ev.mRadius;
-            //*((float*)self + 26) = ev.mMaxResistance;
-            //*((BYTE*)self + 80) = ev.mFire;
-            //*((BYTE*)self + 81) = ev.mBreaking;
-        }
+        logger.error("Event Callback Failed!");
+        logger.error("Uncaught Exception Detected!");
+        logger.error("In Event: Entity or Block Explosion");
     }
-    IF_LISTENED_END(BlockExplodeEvent)
-
     original(self);
 }
 
@@ -1608,6 +1653,8 @@ THook(void, "?_destroyBlocks@WitherBoss@@AEAAXAEAVLevel@@AEBVAABB@@AEAVBlockSour
         ev.mDestroyRange = *aabb;
         if (!ev.call())
             return;
+
+        *aabb = ev.mDestroyRange;
     }
     IF_LISTENED_END(WitherBossDestroyEvent)
     original(_this, a2, aabb, a4, a5);
@@ -1659,7 +1706,12 @@ THook(Actor*,
         ProjectileSpawnEvent ev{};
         ev.mShooter = a4;
         ev.mIdentifier = a3;
-        ev.mType = a3->getFullName();
+
+        string fullName = a3->getFullName();
+        if (EndsWith(fullName, "<>"))
+            fullName = fullName.substr(0, fullName.size() - 2);
+        ev.mType = fullName;
+
         if (!ev.call())
             return nullptr;
     }
@@ -1687,23 +1739,16 @@ THook(bool,
             ev.mNpc = ac;
             ev.mCommand = str.getString();
             if (!ev.call()) 
-
                 return false;
         }
     }
     IF_LISTENED_END(NpcCmdEvent)
-    NpcSceneDialogueData data(*_this, *ac, a5);
-    auto& container = data.getActionsContainer();
-    auto actionAt = container.getActionAt(a4);
-    HashedString& str = dAccess<HashedString>(actionAt, 152);
-    std::cout << actionAt->getText() << std::endl;
-    std::cout << str.getString() << std::endl;
     return original(_this, ac, pl, a4, a5);
 }
 
 ////////////// ArmorStandChange //////////////
 THook(bool, "?_trySwapItem@ArmorStand@@AEAA_NAEAVPlayer@@W4EquipmentSlot@@@Z",
-      ArmStand* _this, Player* a2, int a3)
+      ArmorStand* _this, Player* a2, int a3)
 {
     IF_LISTENED(ArmorStandChangeEvent)
     {
