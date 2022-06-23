@@ -26,6 +26,7 @@ bool globalDebug = false;
 
 //前置声明
 extern void BindAPIs_Old(ScriptEngine* engine);
+extern void BindNewAPIs(script::ScriptEngine* engine);
 
 //预加载依赖库
 void LoadDepends()
@@ -66,6 +67,7 @@ void LoadDebugEngine()
     //绑定API
     try {
         BindAPIs_Old(debugEngine);
+        BindNewAPIs(debugEngine);
     }
     catch (const Exception& e)
     {

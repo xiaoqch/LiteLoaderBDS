@@ -173,6 +173,9 @@
     <ClCompile Include="OldAPI\APIHelp.cpp">
       <Filter>OldAPI</Filter>
     </ClCompile>
+    <ClCompile Include="PlayerWrapper.cpp">
+      <Filter>API</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Configs.h">
@@ -321,6 +324,9 @@
     </ClInclude>
     <ClInclude Include="OldAPI\SystemAPI.h">
       <Filter>OldAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="API\PlayerWrapper.h">
+      <Filter>API</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

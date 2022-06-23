@@ -123,6 +123,9 @@ public:
 
     LIAPI bool sendRawFormPacket(unsigned formId, const string& data) const;
     LIAPI bool sendToastPacket(string title, string msg);
+    inline bool sendToastPacket(string msg) {
+        return sendToastPacket("", msg);
+    }
 
     LIAPI static bool isValid(Player* player);
 
