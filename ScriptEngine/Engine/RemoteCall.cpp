@@ -1,5 +1,5 @@
-#include <API/APIHelp.h>
-#include <API/LlAPI.h>
+#include <OldAPI/APIHelp.h>
+#include <OldAPI/LlAPI.h>
 #include <Engine/RemoteCall.h>
 #include <Engine/GlobalShareData.h>
 #include <Engine/MessageSystem.h>

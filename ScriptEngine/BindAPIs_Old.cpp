@@ -1,31 +1,31 @@
-#include <API/APIHelp.h>
-#include <API/BaseAPI.h>
-#include <API/BlockAPI.h>
-#include <API/BlockEntityAPI.h>
-#include <API/CommandAPI.h>
-#include <API/CommandOriginAPI.h>
-#include <API/CommandOutputAPI.h>
-#include <API/DeviceAPI.h>
-#include <API/DataAPI.h>
-#include <API/DatabaseAPI.h>
-#include <API/ItemAPI.h>
-#include <API/ContainerAPI.h>
-#include <API/EntityAPI.h>
-#include <API/NbtAPI.h>
-#include <API/GuiAPI.h>
-#include <API/LoggerAPI.h>
-#include <API/FileSystemAPI.h>
-#include <API/NetworkAPI.h>
-#include <API/LlAPI.h>
-#include <API/PlayerAPI.h>
-#include <API/ServerAPI.h>
-#include <API/ScriptAPI.h>
-#include <API/ScoreboardAPI.h>
-#include <API/SystemAPI.h>
-#include <API/McAPI.h>
-#include <API/GameUtilsAPI.h>
+#include <OldAPI/APIHelp.h>
+#include <OldAPI/BaseAPI.h>
+#include <OldAPI/BlockAPI.h>
+#include <OldAPI/BlockEntityAPI.h>
+#include <OldAPI/CommandAPI.h>
+#include <OldAPI/CommandOriginAPI.h>
+#include <OldAPI/CommandOutputAPI.h>
+#include <OldAPI/DeviceAPI.h>
+#include <OldAPI/DataAPI.h>
+#include <OldAPI/DatabaseAPI.h>
+#include <OldAPI/ItemAPI.h>
+#include <OldAPI/ContainerAPI.h>
+#include <OldAPI/EntityAPI.h>
+#include <OldAPI/NbtAPI.h>
+#include <OldAPI/GuiAPI.h>
+#include <OldAPI/LoggerAPI.h>
+#include <OldAPI/FileSystemAPI.h>
+#include <OldAPI/NetworkAPI.h>
+#include <OldAPI/LlAPI.h>
+#include <OldAPI/PlayerAPI.h>
+#include <OldAPI/ServerAPI.h>
+#include <OldAPI/ScriptAPI.h>
+#include <OldAPI/ScoreboardAPI.h>
+#include <OldAPI/SystemAPI.h>
+#include <OldAPI/McAPI.h>
+#include <OldAPI/GameUtilsAPI.h>
 
-void BindAPIs(ScriptEngine* engine)
+void BindAPIs_Old(ScriptEngine* engine)
 {
 
     //////////////// 全局函数 ////////////////

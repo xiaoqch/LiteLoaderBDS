@@ -1,5 +1,5 @@
 #include "MessageSystem.h"
-#include <API/APIHelp.h>
+#include <OldAPI/APIHelp.h>
 #include <Tools/Utils.h>
 #include <LLAPI.h>
 #include <EventAPI.h>

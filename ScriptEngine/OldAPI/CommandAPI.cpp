@@ -22,8 +22,8 @@
 #include <MC/ItemInstance.hpp>
 #include <MC/ItemStack.hpp>
 #include <MC/Dimension.hpp>
-#include <ScriptEngine/API/BaseAPI.h>
-#include <ScriptEngine/API/EntityAPI.h>
+#include <ScriptEngine/OldAPI/BaseAPI.h>
+#include <ScriptEngine/OldAPI/EntityAPI.h>
 #include <magic_enum/magic_enum.hpp>
 #include <MC/JsonHelpers.hpp>
 

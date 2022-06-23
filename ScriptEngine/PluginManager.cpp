@@ -1,4 +1,4 @@
-﻿#include <API/APIHelp.h>
+﻿#include <OldAPI/APIHelp.h>
 #include "PluginManager.h"
 #include <Global.hpp>
 #include <Configs.h>
@@ -14,13 +14,13 @@
 #include <LiteLoader/Main/PluginManager.h>
 #include <Loader.h>
 #include <ScheduleAPI.h>
-#include <API/EventAPI.h>
-#include <API/CommandAPI.h>
+#include <OldAPI/EventAPI.h>
+#include <OldAPI/CommandAPI.h>
 #include <Utils/Hash.h>
 #define H(x) do_hash(x)
 using namespace std;
 
-extern void BindAPIs(ScriptEngine* engine);
+extern void BindAPIs_Old(ScriptEngine* engine);
 
 //Helper
 string RemoveRealAllExtension(string fileName)
@@ -114,7 +114,7 @@ bool PluginManager::loadPlugin(const std::string& filePath, bool isHotLoad, bool
 
         //绑定API
         try {
-            BindAPIs(engine);
+            BindAPIs_Old(engine);
         }
         catch (const Exception& e)
         {

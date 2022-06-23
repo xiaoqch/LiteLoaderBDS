@@ -1,5 +1,5 @@
-#include <API/APIHelp.h>
-#include <API/EventAPI.h>
+#include <OldAPI/APIHelp.h>
+#include <OldAPI/EventAPI.h>
 #include <Engine/GlobalShareData.h>
 #include <Engine/EngineOwnData.h>
 #include <Engine/LocalShareData.h>
@@ -31,7 +31,7 @@ fifo_json globalConfig;
 
 extern void LoadDepends();
 extern void LoadMain();
-extern void BindAPIs(ScriptEngine *engine);
+extern void BindAPIs_Old(ScriptEngine* engine);
 extern void LoadDebugEngine();
 
 void LoaderInfo()

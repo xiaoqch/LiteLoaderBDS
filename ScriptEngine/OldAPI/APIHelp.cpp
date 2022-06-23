@@ -6,21 +6,21 @@
 #include <cmath>
 #include <sstream>
 
-#include <API/BaseAPI.h>
-#include <API/BlockAPI.h>
-#include <API/EntityAPI.h>
-#include <API/ItemAPI.h>
-#include <API/PlayerAPI.h>
-#include <API/DeviceAPI.h>
-#include <API/ItemAPI.h>
-#include <API/EntityAPI.h>
-#include <API/ContainerAPI.h>
-#include <API/NbtAPI.h>
-#include <API/GuiAPI.h>
-#include <API/DataAPI.h>
-#include <API/DatabaseAPI.h>
-#include <API/PlayerAPI.h>
-#include <API/NetworkAPI.h>
+#include <OldAPI/BaseAPI.h>
+#include <OldAPI/BlockAPI.h>
+#include <OldAPI/EntityAPI.h>
+#include <OldAPI/ItemAPI.h>
+#include <OldAPI/PlayerAPI.h>
+#include <OldAPI/DeviceAPI.h>
+#include <OldAPI/ItemAPI.h>
+#include <OldAPI/EntityAPI.h>
+#include <OldAPI/ContainerAPI.h>
+#include <OldAPI/NbtAPI.h>
+#include <OldAPI/GuiAPI.h>
+#include <OldAPI/DataAPI.h>
+#include <OldAPI/DatabaseAPI.h>
+#include <OldAPI/PlayerAPI.h>
+#include <OldAPI/NetworkAPI.h>
 #include <Global.hpp>
 #include <Engine/EngineOwnData.h>
 
@@ -257,6 +257,7 @@ Local<Value> BigInteger_Helper(fifo_json& i)
         }
         return Number::newNumber(i.get<int64_t>());
     }
+    return Local<Value>();
 }
 
 void JsonToValue_Helper(Local<Array> &res, fifo_json &j);

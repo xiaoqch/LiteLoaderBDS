@@ -1,4 +1,4 @@
-#include <API/APIHelp.h>
+#include <OldAPI/APIHelp.h>
 #include <Engine/GlobalShareData.h>
 #include <Engine/EngineOwnData.h>
 #include <Engine/LoaderHelper.h>
@@ -25,7 +25,7 @@ ScriptEngine *debugEngine;
 bool globalDebug = false;
 
 //前置声明
-extern void BindAPIs(ScriptEngine *engine);
+extern void BindAPIs_Old(ScriptEngine* engine);
 
 //预加载依赖库
 void LoadDepends()
@@ -65,7 +65,7 @@ void LoadDebugEngine()
 
     //绑定API
     try {
-        BindAPIs(debugEngine);
+        BindAPIs_Old(debugEngine);
     }
     catch (const Exception& e)
     {

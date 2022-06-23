@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="API">
-      <UniqueIdentifier>{2ffc71f3-f140-445c-a964-5eb48b90fc50}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Main">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>
@@ -21,57 +18,15 @@
     <Filter Include="Resource">
       <UniqueIdentifier>{01a1c5e2-9b11-4e4b-aece-b6f0aaef4b25}</UniqueIdentifier>
     </Filter>
+    <Filter Include="OldAPI">
+      <UniqueIdentifier>{2ffc71f3-f140-445c-a964-5eb48b90fc50}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="API">
+      <UniqueIdentifier>{6708c2a5-a67a-4069-9abe-9771ffb28139}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="API\APIHelp.cpp">
-      <Filter>API</Filter>
-    </ClCompile>
-    <ClCompile Include="API\BaseAPI.cpp">
-      <Filter>API</Filter>
-    </ClCompile>
-    <ClCompile Include="API\BlockAPI.cpp">
-      <Filter>API</Filter>
-    </ClCompile>
-    <ClCompile Include="API\CommandCompatibleAPI.cpp">
-      <Filter>API</Filter>
-    </ClCompile>
-    <ClCompile Include="API\DataAPI.cpp">
-      <Filter>API</Filter>
-    </ClCompile>
-    <ClCompile Include="API\EntityAPI.cpp">
-      <Filter>API</Filter>
-    </ClCompile>
-    <ClCompile Include="API\EventAPI.cpp">
-      <Filter>API</Filter>
-    </ClCompile>
-    <ClCompile Include="API\FileSystemAPI.cpp">
-      <Filter>API</Filter>
-    </ClCompile>
-    <ClCompile Include="API\GuiAPI.cpp">
-      <Filter>API</Filter>
-    </ClCompile>
-    <ClCompile Include="API\ItemAPI.cpp">
-      <Filter>API</Filter>
-    </ClCompile>
-    <ClCompile Include="API\LoggerAPI.cpp">
-      <Filter>API</Filter>
-    </ClCompile>
-    <ClCompile Include="API\LlAPI.cpp">
-      <Filter>API</Filter>
-    </ClCompile>
-    <ClCompile Include="API\NbtAPI.cpp">
-      <Filter>API</Filter>
-    </ClCompile>
-    <ClCompile Include="API\NetworkAPI.cpp">
-      <Filter>API</Filter>
-    </ClCompile>
-    <ClCompile Include="API\PlayerAPI.cpp">
-      <Filter>API</Filter>
-    </ClCompile>
-    <ClCompile Include="API\ServerAPI.cpp">
-      <Filter>API</Filter>
-    </ClCompile>
-    <ClCompile Include="BindAPIs.cpp">
+    <ClCompile Include="BindAPIs_Old.cpp">
       <Filter>Main</Filter>
     </ClCompile>
     <ClCompile Include="dllmain.cpp">
@@ -82,12 +37,6 @@
     </ClCompile>
     <ClCompile Include="Loader.cpp">
       <Filter>Main</Filter>
-    </ClCompile>
-    <ClCompile Include="API\ScriptAPI.cpp">
-      <Filter>API</Filter>
-    </ClCompile>
-    <ClCompile Include="API\SystemAPI.cpp">
-      <Filter>API</Filter>
     </ClCompile>
     <ClCompile Include="Engine\GlobalShareData.cpp">
       <Filter>Engine</Filter>
@@ -101,29 +50,11 @@
     <ClCompile Include="Engine\LocalShareData.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
-    <ClCompile Include="API\DeviceAPI.cpp">
-      <Filter>API</Filter>
-    </ClCompile>
-    <ClCompile Include="API\ScoreboardAPI.cpp">
-      <Filter>API</Filter>
-    </ClCompile>
     <ClCompile Include="Engine\MessageSystem.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
-    <ClCompile Include="API\ContainerAPI.cpp">
-      <Filter>API</Filter>
-    </ClCompile>
     <ClCompile Include="Engine\TimeTaskSystem.cpp">
       <Filter>Engine</Filter>
-    </ClCompile>
-    <ClCompile Include="API\BlockEntityAPI.cpp">
-      <Filter>API</Filter>
-    </ClCompile>
-    <ClCompile Include="API\GameUtilsAPI.cpp">
-      <Filter>API</Filter>
-    </ClCompile>
-    <ClCompile Include="API\McAPI.cpp">
-      <Filter>API</Filter>
     </ClCompile>
     <ClCompile Include="Global.cpp">
       <Filter>Main</Filter>
@@ -146,91 +77,109 @@
     <ClCompile Include="BuiltinCommands.cpp">
       <Filter>Main</Filter>
     </ClCompile>
-    <ClCompile Include="API\CommandAPI.cpp">
-      <Filter>API</Filter>
-    </ClCompile>
-    <ClCompile Include="API\CommandOriginAPI.cpp">
-      <Filter>API</Filter>
-    </ClCompile>
-    <ClCompile Include="API\CommandOutputAPI.cpp">
-      <Filter>API</Filter>
-    </ClCompile>
     <ClCompile Include="PluginManager.cpp">
       <Filter>Main</Filter>
     </ClCompile>
     <ClCompile Include="Engine\EngineManager.cpp">
       <Filter>Engine</Filter>
     </ClCompile>
-    <ClCompile Include="API\RemoteCallAPI.cpp">
-      <Filter>API</Filter>
+    <ClCompile Include="OldAPI\BaseAPI.cpp">
+      <Filter>OldAPI</Filter>
     </ClCompile>
-    <ClCompile Include="API\DatabaseAPI.cpp">
-      <Filter>API</Filter>
+    <ClCompile Include="OldAPI\BlockAPI.cpp">
+      <Filter>OldAPI</Filter>
     </ClCompile>
-    <ClCompile Include="API\SimulatedPlayerAPI.cpp">
-      <Filter>API</Filter>
+    <ClCompile Include="OldAPI\BlockEntityAPI.cpp">
+      <Filter>OldAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="OldAPI\CommandAPI.cpp">
+      <Filter>OldAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="OldAPI\CommandCompatibleAPI.cpp">
+      <Filter>OldAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="OldAPI\CommandOriginAPI.cpp">
+      <Filter>OldAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="OldAPI\CommandOutputAPI.cpp">
+      <Filter>OldAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="OldAPI\ContainerAPI.cpp">
+      <Filter>OldAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="OldAPI\DataAPI.cpp">
+      <Filter>OldAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="OldAPI\DatabaseAPI.cpp">
+      <Filter>OldAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="OldAPI\DeviceAPI.cpp">
+      <Filter>OldAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="OldAPI\EntityAPI.cpp">
+      <Filter>OldAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="OldAPI\EventAPI.cpp">
+      <Filter>OldAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="OldAPI\FileSystemAPI.cpp">
+      <Filter>OldAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="OldAPI\GameUtilsAPI.cpp">
+      <Filter>OldAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="OldAPI\GuiAPI.cpp">
+      <Filter>OldAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="OldAPI\ItemAPI.cpp">
+      <Filter>OldAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="OldAPI\LlAPI.cpp">
+      <Filter>OldAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="OldAPI\LoggerAPI.cpp">
+      <Filter>OldAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="OldAPI\McAPI.cpp">
+      <Filter>OldAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="OldAPI\NbtAPI.cpp">
+      <Filter>OldAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="OldAPI\NetworkAPI.cpp">
+      <Filter>OldAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="OldAPI\PlayerAPI.cpp">
+      <Filter>OldAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="OldAPI\RemoteCallAPI.cpp">
+      <Filter>OldAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="OldAPI\ScoreboardAPI.cpp">
+      <Filter>OldAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="OldAPI\ScriptAPI.cpp">
+      <Filter>OldAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="OldAPI\ServerAPI.cpp">
+      <Filter>OldAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="OldAPI\SimulatedPlayerAPI.cpp">
+      <Filter>OldAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="OldAPI\SystemAPI.cpp">
+      <Filter>OldAPI</Filter>
+    </ClCompile>
+    <ClCompile Include="OldAPI\APIHelp.cpp">
+      <Filter>OldAPI</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="API\BaseAPI.h">
-      <Filter>API</Filter>
-    </ClInclude>
-    <ClInclude Include="API\BlockAPI.h">
-      <Filter>API</Filter>
-    </ClInclude>
-    <ClInclude Include="API\CommandCompatibleAPI.h">
-      <Filter>API</Filter>
-    </ClInclude>
-    <ClInclude Include="API\DataAPI.h">
-      <Filter>API</Filter>
-    </ClInclude>
-    <ClInclude Include="API\EntityAPI.h">
-      <Filter>API</Filter>
-    </ClInclude>
-    <ClInclude Include="API\EventAPI.h">
-      <Filter>API</Filter>
-    </ClInclude>
-    <ClInclude Include="API\FileSystemAPI.h">
-      <Filter>API</Filter>
-    </ClInclude>
-    <ClInclude Include="API\GuiAPI.h">
-      <Filter>API</Filter>
-    </ClInclude>
-    <ClInclude Include="API\ItemAPI.h">
-      <Filter>API</Filter>
-    </ClInclude>
-    <ClInclude Include="API\LoggerAPI.h">
-      <Filter>API</Filter>
-    </ClInclude>
-    <ClInclude Include="API\LlAPI.h">
-      <Filter>API</Filter>
-    </ClInclude>
-    <ClInclude Include="API\NbtAPI.h">
-      <Filter>API</Filter>
-    </ClInclude>
-    <ClInclude Include="API\NetworkAPI.h">
-      <Filter>API</Filter>
-    </ClInclude>
-    <ClInclude Include="API\APIHelp.h">
-      <Filter>API</Filter>
-    </ClInclude>
-    <ClInclude Include="API\PlayerAPI.h">
-      <Filter>API</Filter>
-    </ClInclude>
-    <ClInclude Include="API\ServerAPI.h">
-      <Filter>API</Filter>
-    </ClInclude>
     <ClInclude Include="Configs.h">
       <Filter>Main</Filter>
     </ClInclude>
     <ClInclude Include="Loader.h">
       <Filter>Main</Filter>
-    </ClInclude>
-    <ClInclude Include="API\ScriptAPI.h">
-      <Filter>API</Filter>
-    </ClInclude>
-    <ClInclude Include="API\SystemAPI.h">
-      <Filter>API</Filter>
     </ClInclude>
     <ClInclude Include="Engine\GlobalShareData.h">
       <Filter>Engine</Filter>
@@ -247,29 +196,11 @@
     <ClInclude Include="Engine\LocalShareData.h">
       <Filter>Engine</Filter>
     </ClInclude>
-    <ClInclude Include="API\DeviceAPI.h">
-      <Filter>API</Filter>
-    </ClInclude>
-    <ClInclude Include="API\ScoreboardAPI.h">
-      <Filter>API</Filter>
-    </ClInclude>
     <ClInclude Include="Engine\MessageSystem.h">
       <Filter>Engine</Filter>
     </ClInclude>
-    <ClInclude Include="API\ContainerAPI.h">
-      <Filter>API</Filter>
-    </ClInclude>
     <ClInclude Include="Engine\TimeTaskSystem.h">
       <Filter>Engine</Filter>
-    </ClInclude>
-    <ClInclude Include="API\BlockEntityAPI.h">
-      <Filter>API</Filter>
-    </ClInclude>
-    <ClInclude Include="API\McAPI.h">
-      <Filter>API</Filter>
-    </ClInclude>
-    <ClInclude Include="API\GameUtilsAPI.h">
-      <Filter>API</Filter>
     </ClInclude>
     <ClInclude Include="Global.hpp">
       <Filter>Main</Filter>
@@ -298,26 +229,98 @@
     <ClInclude Include="PluginManager.h">
       <Filter>Main</Filter>
     </ClInclude>
-    <ClInclude Include="API\CommandAPI.h">
-      <Filter>API</Filter>
-    </ClInclude>
-    <ClInclude Include="API\CommandOriginAPI.h">
-      <Filter>API</Filter>
-    </ClInclude>
-    <ClInclude Include="API\CommandOutputAPI.h">
-      <Filter>API</Filter>
-    </ClInclude>
     <ClInclude Include="Engine\EngineManager.h">
       <Filter>Engine</Filter>
     </ClInclude>
-    <ClInclude Include="API\RemoteCallAPI.h">
-      <Filter>API</Filter>
-    </ClInclude>
-    <ClInclude Include="API\DatabaseAPI.h">
-      <Filter>API</Filter>
-    </ClInclude>
     <ClInclude Include="resource.h">
       <Filter>Resource</Filter>
+    </ClInclude>
+    <ClInclude Include="OldAPI\APIHelp.h">
+      <Filter>OldAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="OldAPI\BaseAPI.h">
+      <Filter>OldAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="OldAPI\BlockAPI.h">
+      <Filter>OldAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="OldAPI\BlockEntityAPI.h">
+      <Filter>OldAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="OldAPI\CommandAPI.h">
+      <Filter>OldAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="OldAPI\CommandCompatibleAPI.h">
+      <Filter>OldAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="OldAPI\CommandOriginAPI.h">
+      <Filter>OldAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="OldAPI\CommandOutputAPI.h">
+      <Filter>OldAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="OldAPI\ContainerAPI.h">
+      <Filter>OldAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="OldAPI\DataAPI.h">
+      <Filter>OldAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="OldAPI\DatabaseAPI.h">
+      <Filter>OldAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="OldAPI\DeviceAPI.h">
+      <Filter>OldAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="OldAPI\EntityAPI.h">
+      <Filter>OldAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="OldAPI\EventAPI.h">
+      <Filter>OldAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="OldAPI\FileSystemAPI.h">
+      <Filter>OldAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="OldAPI\GameUtilsAPI.h">
+      <Filter>OldAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="OldAPI\GuiAPI.h">
+      <Filter>OldAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="OldAPI\ItemAPI.h">
+      <Filter>OldAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="OldAPI\LlAPI.h">
+      <Filter>OldAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="OldAPI\LoggerAPI.h">
+      <Filter>OldAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="OldAPI\McAPI.h">
+      <Filter>OldAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="OldAPI\NbtAPI.h">
+      <Filter>OldAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="OldAPI\NetworkAPI.h">
+      <Filter>OldAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="OldAPI\PlayerAPI.h">
+      <Filter>OldAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="OldAPI\RemoteCallAPI.h">
+      <Filter>OldAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="OldAPI\ScoreboardAPI.h">
+      <Filter>OldAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="OldAPI\ScriptAPI.h">
+      <Filter>OldAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="OldAPI\ServerAPI.h">
+      <Filter>OldAPI</Filter>
+    </ClInclude>
+    <ClInclude Include="OldAPI\SystemAPI.h">
+      <Filter>OldAPI</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

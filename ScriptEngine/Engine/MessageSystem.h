@@ -1,7 +1,7 @@
 #pragma once
 #include <ScriptX/ScriptX.h>
 #include <windows.h>
-#include <API/APIHelp.h>
+#include <OldAPI/APIHelp.h>
 #include "OperationCount.h"
 #include <string>
 #include <map>

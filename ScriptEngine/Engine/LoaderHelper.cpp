@@ -1,8 +1,8 @@
 #include "LoaderHelper.h"
-#include <API/APIHelp.h>
+#include <OldAPI/APIHelp.h>
 #include <Engine/GlobalShareData.h>
 #include <Engine/EngineOwnData.h>
-#include <API/EventAPI.h>
+#include <OldAPI/EventAPI.h>
 #include <list>
 #include <string>
 #include <vector>
@@ -17,7 +17,7 @@
 #include <Engine/LoaderHelper.h>
 #include <Engine/RemoteCall.h>
 #include <Engine/MessageSystem.h>
-#include <API/CommandAPI.h>
+#include <OldAPI/CommandAPI.h>
 #include <Utils/StringHelper.h>
 #include <Utils/FileHelper.h>
 #include <ScheduleAPI.h>
