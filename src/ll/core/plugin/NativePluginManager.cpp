@@ -23,9 +23,11 @@
 #include "ll/api/utils/WinUtils.h"
 #include "ll/core/LeviLamina.h"
 
-#include <libloaderapi.h>
-#include <minwindef.h>
-#include <processenv.h>
+#include "errhandlingapi.h"
+#include "libloaderapi.h"
+#include "minwindef.h"
+#include "processenv.h"
+#include "winerror.h"
 
 namespace ll::plugin {
 using namespace i18n_literals;
@@ -88,28 +90,36 @@ static std::string diagnosticDependency(std::filesystem::path const& path) {
 
 Expected<> NativePluginManager::load(Manifest manifest) {
     auto l(lock());
-    if (hasPlugin(manifest.name)) {
-        return makeStringError("Plugin {0} already exists"_tr(manifest.name));
-    }
     currentLoadingPlugin = std::make_shared<NativePlugin>(std::move(manifest));
     struct Remover {
         ~Remover() { currentLoadingPlugin = nullptr; };
     } r;
 
-    auto pluginDir = std::filesystem::canonical(getPluginsRoot() / currentLoadingPlugin->getManifest().name);
+    auto pluginDir =
+        std::filesystem::canonical(getPluginsRoot() / string_utils::sv2u8sv(currentLoadingPlugin->getManifest().name));
 
-    std::wstring buffer(32767, '\0');
-
-    if (auto res = GetEnvironmentVariable(L"PATH", buffer.data(), 32767); res != 0 && res != 32767) {
-        buffer.resize(res);
-        if (!buffer.empty()) {
-            buffer += L";";
+    if (auto res = win_utils::adaptFixedSizeToAllocatedResult(
+            [](wchar_t* value, size_t valueLength, size_t& valueLengthNeededWithNul) -> bool {
+                ::SetLastError(ERROR_SUCCESS);
+                valueLengthNeededWithNul = ::GetEnvironmentVariableW(L"PATH", value, static_cast<DWORD>(valueLength));
+                if (valueLengthNeededWithNul == 0 && ::GetLastError() != ERROR_SUCCESS) {
+                    return false;
+                }
+                if (valueLengthNeededWithNul < valueLength) {
+                    valueLengthNeededWithNul++; // It fit, account for the null.
+                }
+                return true;
+            }
+        );
+        res) {
+        if (!res->empty()) {
+            *res += L";";
         }
-        buffer += pluginDir.wstring();
-        SetEnvironmentVariable(L"PATH", buffer.c_str());
+        *res += pluginDir.wstring();
+        SetEnvironmentVariableW(L"PATH", res->c_str());
     }
-    auto entry = pluginDir / currentLoadingPlugin->getManifest().entry;
-    auto lib   = LoadLibrary(entry.c_str());
+    auto entry = pluginDir / string_utils::sv2u8sv(currentLoadingPlugin->getManifest().entry);
+    auto lib   = LoadLibraryW(entry.c_str());
     if (!lib) {
         auto       e = error_utils::getWinLastError();
         Expected<> error{makeExceptionError(std::make_exception_ptr(e))};
@@ -119,12 +129,10 @@ Expected<> NativePluginManager::load(Manifest manifest) {
         return error;
     }
     if (!GetProcAddress(lib, "ll_memory_operator_overrided")) {
-        // TODO: change to error before release
         using namespace i18n_literals;
-        logger.error(
+        return makeStringError(
             "The plugin is not using the unified memory allocation operator, will not be loaded in next version."_tr()
         );
-        // return false;
     }
     currentLoadingPlugin->setHandle(lib);
     currentLoadingPlugin->onLoad(reinterpret_cast<Plugin::callback_t*>(GetProcAddress(lib, "ll_plugin_load")));
@@ -140,9 +148,6 @@ Expected<> NativePluginManager::load(Manifest manifest) {
 
 Expected<> NativePluginManager::unload(std::string_view name) {
     auto l(lock());
-    if (!hasPlugin(name)) {
-        return makeStringError("Plugin not found"_tr());
-    }
     auto ptr = std::static_pointer_cast<NativePlugin>(getPlugin(name));
     if (!ptr->hasOnUnload()) {
         return makeStringError("The plugin does not register an unload function"_tr());

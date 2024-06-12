@@ -6,13 +6,12 @@
 #include "ll/api/memory/Memory.h"
 #include "ll/api/reflection/Reflection.h"
 #include "ll/api/utils/StringUtils.h"
+#include "ll/api/utils/WinUtils.h"
 
 #include "windows.h"
 
-#if _HAS_CXX23
 #include "DbgHelp.h"
 #pragma comment(lib, "DbgHelp.lib")
-#endif
 
 #ifdef LL_DEBUG
 #include "ll/api/utils/StacktraceUtils.h"
@@ -114,8 +113,8 @@ std::system_error getWinLastError() noexcept { return std::error_code{(int)GetLa
 extern "C" PEXCEPTION_RECORD* __current_exception();         // NOLINT
 extern "C" PCONTEXT*          __current_exception_context(); // NOLINT
 
-_EXCEPTION_RECORD& current_exception() noexcept { return **__current_exception(); }
-_CONTEXT&          current_exception_context() noexcept { return **__current_exception_context(); }
+optional_ref<::_EXCEPTION_RECORD> current_exception_record() noexcept { return **__current_exception(); }
+optional_ref<_CONTEXT>            current_exception_context() noexcept { return **__current_exception_context(); }
 
 std::exception_ptr createExceptionPtr(_EXCEPTION_RECORD const& rec) noexcept {
     auto               realType = std::make_shared<_EXCEPTION_RECORD>(rec);
@@ -124,16 +123,14 @@ std::exception_ptr createExceptionPtr(_EXCEPTION_RECORD const& rec) noexcept {
     return res;
 }
 
-#if _HAS_CXX23
-
-std::stacktrace stacktraceFromContext(_CONTEXT const& context, size_t skip, size_t maxDepth) {
-    if (std::addressof(context) == nullptr) {
+std::stacktrace stacktraceFromContext(optional_ref<_CONTEXT const> context, size_t skip, size_t maxDepth) {
+    if (!context) {
         return {};
     }
     STACKFRAME64 sf{};
-    sf.AddrPC.Offset    = context.Rip;
-    sf.AddrStack.Offset = context.Rsp;
-    sf.AddrFrame.Offset = context.Rbp;
+    sf.AddrPC.Offset    = context->Rip;
+    sf.AddrStack.Offset = context->Rsp;
+    sf.AddrFrame.Offset = context->Rbp;
     sf.AddrPC.Mode      = AddrModeFlat;
     sf.AddrStack.Mode   = AddrModeFlat;
     sf.AddrFrame.Mode   = AddrModeFlat;
@@ -150,7 +147,7 @@ std::stacktrace stacktraceFromContext(_CONTEXT const& context, size_t skip, size
 
     constexpr auto machine = IMAGE_FILE_MACHINE_AMD64;
 
-    auto tmpCtx = context;
+    auto tmpCtx = *context;
 
     for (size_t i = 0; i < maxDepth; ++i) {
         SetLastError(0);
@@ -174,8 +171,6 @@ std::stacktrace stacktraceFromContext(_CONTEXT const& context, size_t skip, size
     }
     return *reinterpret_cast<std::stacktrace*>(&realStacktrace);
 }
-
-#endif
 
 template <class T>
 static std::exception_ptr getNested(T const& e) {
@@ -206,14 +201,10 @@ std::string makeExceptionString(std::exception_ptr ePtr) noexcept {
         if (rt->ExceptionCode == UntypedExceptionRef::exceptionCodeOfCpp) {
             try {
                 UntypedExceptionRef exc{*rt};
-                std::string         handleName("unknown module");
-
-                std::wstring buffer(32767, '\0');
-                auto         size = GetModuleFileNameW((HMODULE)exc.handle, buffer.data(), 32767);
-                if (size) {
-                    buffer.resize(size);
-                    handleName = string_utils::u8str2str(std::filesystem::path(buffer).stem().u8string());
-                }
+                std::string         handleName =
+                    win_utils::getModulePath(exc.handle)
+                        .transform([](auto&& path) { return string_utils::u8str2str(path.stem().u8string()); })
+                        .value_or("unknown module");
                 if (exc.getNumCatchableTypes() > 0) {
                     auto& type = *exc.getTypeInfo(0);
                     if (type == typeid(seh_exception)) {
@@ -264,7 +255,7 @@ std::string makeExceptionString(std::exception_ptr ePtr) noexcept {
         } catch (char const* e) {
             res += string_utils::tou8str(e);
         } catch (...) {
-            auto& unkExc  = current_exception();
+            auto& unkExc  = *current_exception_record();
             res          += fmt::format(
                 "[0x{:0>8X}:{}] {}",
                 (uint)unkExc.ExceptionCode,
@@ -288,7 +279,7 @@ std::string makeExceptionString(std::exception_ptr ePtr) noexcept {
 
 void printCurrentException(ll::OutputStream& stream, std::exception_ptr const& e) noexcept {
     try {
-#if defined(LL_DEBUG) && _HAS_CXX23
+#if defined(LL_DEBUG)
         std::string res;
         auto        stacktrace = stacktraceFromCurrExc();
         if (stacktrace.empty()) {

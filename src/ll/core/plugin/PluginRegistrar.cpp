@@ -32,10 +32,15 @@
 #include "ll/core/LeviLamina.h"
 #include "ll/core/plugin/NativePluginManager.h"
 
+#include "ll/api/command/CommandRegistrar.h"
 
 #include "mc/external/expected_lite/expected.h"
 #include "mc/server/ServerInstance.h"
 #include "mc/world/events/ServerInstanceEventCoordinator.h"
+
+namespace ll::command {
+enum class PluginNames {};
+}
 
 namespace ll::plugin {
 using namespace ::ll::i18n_literals;
@@ -120,7 +125,6 @@ void PluginRegistrar::loadAllPlugins() {
             for (auto& dependency : *manifest.dependencies) {
                 if (!manifests.contains(dependency.name) || !checkVersion(manifests.at(dependency.name), dependency)) {
                     error = true;
-#if _HAS_CXX23
                     logger.error("Missing dependency {0}"_tr(
                         dependency.version
                             .transform([&](auto& ver) {
@@ -128,7 +132,6 @@ void PluginRegistrar::loadAllPlugins() {
                             })
                             .value_or(dependency.name)
                     ));
-#endif
                 }
             }
             if (error) {
@@ -157,14 +160,12 @@ void PluginRegistrar::loadAllPlugins() {
         for (auto& conflict : *manifest.conflicts) {
             if (manifests.contains(conflict.name) && checkVersion(manifests.at(conflict.name), conflict)) {
                 conflicts.emplace_back(name);
-#if _HAS_CXX23
                 logger.error("{0} conflicts with {1}"_tr(
                     name,
                     conflict.version
                         .transform([&](auto& ver) { return fmt::format("{} v{}", conflict.name, ver.to_string()); })
                         .value_or(conflict.name)
                 ));
-#endif
             }
         }
     }
@@ -259,10 +260,13 @@ LL_TYPE_INSTANCE_HOOK(
     void,
     ::ServerInstance& ins
 ) {
-    setServerStatus(ServerStatus::Running);
     origin(ins);
     auto& registrar = PluginRegistrar::getInstance();
     auto  names     = registrar.getSortedPluginNames();
+    {
+        using namespace ll::command;
+        CommandRegistrar::getInstance().tryRegisterSoftEnum(enum_name_v<PluginNames>, names);
+    }
     if (!names.empty()) {
         logger.info("Enabling plugins..."_tr());
         auto   begin = std::chrono::steady_clock::now();
@@ -287,6 +291,7 @@ LL_TYPE_INSTANCE_HOOK(
             ));
         }
     }
+    setServerStatus(ServerStatus::Running);
 }
 LL_TYPE_INSTANCE_HOOK(
     PluginRegistrar::DisableAllPlugins,
@@ -324,9 +329,37 @@ Expected<> PluginRegistrar::loadPlugin(std::string_view name) noexcept {
         }
     }
     auto& manifest = *res;
-    // TODO: check deps,...,......
-    return PluginManagerRegistry::getInstance().loadPlugin(std::move(manifest)).transform([&, this]() {
+    auto& reg      = PluginManagerRegistry::getInstance();
+    if (manifest.dependencies) {
+        for (auto& dependency : *manifest.dependencies) {
+            if (!reg.hasPlugin(dependency.name)
+                || !checkVersion(reg.getPlugin(dependency.name)->getManifest(), dependency)) {
+                return makeStringError("Missing dependency {0}"_tr(
+                    dependency.version
+                        .transform([&](auto& ver) { return fmt::format("{} v{}", dependency.name, ver.to_string()); })
+                        .value_or(dependency.name)
+                ));
+            }
+        }
+    }
+    if (manifest.conflicts) {
+        for (auto& conflict : *manifest.conflicts) {
+            if (reg.hasPlugin(conflict.name) && checkVersion(reg.getPlugin(conflict.name)->getManifest(), conflict)) {
+                return makeStringError("{0} conflicts with {1}"_tr(
+                    name,
+                    conflict.version
+                        .transform([&](auto& ver) { return fmt::format("{} v{}", conflict.name, ver.to_string()); })
+                        .value_or(conflict.name)
+                ));
+            }
+        }
+    }
+    return reg.loadPlugin(std::move(manifest)).transform([&, this]() {
         impl->deps.emplace(std::string{name});
+        {
+            using namespace ll::command;
+            CommandRegistrar::getInstance().addSoftEnumValues(enum_name_v<PluginNames>, {std::string{name}});
+        }
     });
 }
 Expected<> PluginRegistrar::unloadPlugin(std::string_view name) noexcept {

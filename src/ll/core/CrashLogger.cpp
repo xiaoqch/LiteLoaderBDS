@@ -14,10 +14,8 @@
 
 #include <windows.h>
 
-#if _HAS_CXX23
 #include "DbgHelp.h"
 #pragma comment(lib, "DbgHelp.lib")
-#endif
 
 namespace ll {
 using namespace i18n_literals;
@@ -60,8 +58,6 @@ void CrashLogger::initCrashLogger() {
     crashLogger.info("CrashLogger enabled successfully"_tr());
     return;
 }
-
-#if _HAS_CXX23
 
 static struct CrashInfo {
     HANDLE                                         process{};
@@ -183,7 +179,8 @@ static BOOL CALLBACK dumpModules(
 
 static bool genMiniDumpFile(PEXCEPTION_POINTERS e) {
 
-    auto dumpFilePath = crashInfo.path / (crashInfo.settings.dumpPrefix + crashInfo.date + ".dmp");
+    auto dumpFilePath =
+        crashInfo.path / string_utils::str2u8str(crashInfo.settings.dumpPrefix + crashInfo.date + ".dmp");
 
     auto hDumpFile =
         CreateFileW(dumpFilePath.c_str(), GENERIC_WRITE, 0, nullptr, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, nullptr);
@@ -321,5 +318,4 @@ CrashLoggerNew::CrashLoggerNew() {
 }
 
 CrashLoggerNew::~CrashLoggerNew() { SetUnhandledExceptionFilter((LPTOP_LEVEL_EXCEPTION_FILTER)previous); }
-#endif
 } // namespace ll
