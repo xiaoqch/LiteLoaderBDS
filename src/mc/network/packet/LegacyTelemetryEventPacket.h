@@ -11,6 +11,7 @@
 #include "mc/events/MinecraftEventing.h"
 #include "mc/network/packet/Packet.h"
 #include "mc/world/AutomaticID.h"
+#include "mc/world/item/components/ItemUseMethod.h"
 
 class LegacyTelemetryEventPacket : public ::Packet {
 public:
@@ -29,28 +30,30 @@ public:
         CauldronUsed                     = 0x5,
         PlayerDied                       = 0x6,
         BossKilled                       = 0x7,
-        AgentCommand_OBSOLETE            = 0x8,
+        AgentCommand_Obsolete            = 0x8,
         AgentCreated                     = 0x9,
-        PatternRemoved_OBSOLETE          = 0xA,
-        SlashCommand_0                   = 0xB,
+        PatternRemoved_Obsolete          = 0xA,
+        SlashCommand                     = 0xB,
         Deprecated_FishBucketed          = 0xC,
         MobBorn                          = 0xD,
-        PetDied_OBSOLETE                 = 0xE,
+        PetDied_Obsolete                 = 0xE,
         POICauldronUsed                  = 0xF,
         ComposterUsed                    = 0x10,
         BellUsed                         = 0x11,
         ActorDefinition                  = 0x12,
         RaidUpdate                       = 0x13,
-        PlayerMovementAnomaly            = 0x14,
-        PlayerMovementCorrected          = 0x15,
+        PlayerMovementAnomaly_Obsolete   = 0x14,
+        PlayerMovementCorrected_Obsolete = 0x15,
         HoneyHarvested                   = 0x16,
         TargetBlockHit                   = 0x17,
         PiglinBarter                     = 0x18,
         PlayerWaxedOrUnwaxedCopper       = 0x19,
         CodeBuilderRuntimeAction         = 0x1A,
         CodeBuilderScoreboard            = 0x1B,
-        StriderRiddenInLavaInOverworld_0 = 0x1C,
-        SneakCloseToSculkSensor_0        = 0x1D,
+        StriderRiddenInLavaInOverworld   = 0x1C,
+        SneakCloseToSculkSensor          = 0x1D,
+        CarefulRestoration               = 0x1E,
+        ItemUsedEvent                    = 0x1F
     };
 
     struct Data {
@@ -250,6 +253,9 @@ public:
 
     // symbol: ??0LegacyTelemetryEventPacket@@QEAA@PEBVPlayer@@HV?$not_null@PEBVActor@@@gsl@@@Z
     MCAPI LegacyTelemetryEventPacket(class Player const*, int, gsl::not_null<class Actor const*>);
+
+    // symbol: ??0LegacyTelemetryEventPacket@@QEAA@AEBVPlayer@@AEBVItemStackBase@@W4ItemUseMethod@@H@Z
+    MCAPI LegacyTelemetryEventPacket(class Player const&, class ItemStackBase const&, ::ItemUseMethod, int);
 
     // symbol: ??0LegacyTelemetryEventPacket@@QEAA@PEBVPlayer@@FIF@Z
     MCAPI LegacyTelemetryEventPacket(class Player const*, short, uint, short);

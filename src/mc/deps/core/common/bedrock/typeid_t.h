@@ -8,6 +8,7 @@ class Value;
 class CommandRegistry;
 class Command;
 class CommandIntegerRange;
+struct ActorDefinitionIdentifier;
 template <typename>
 class CommandSelector;
 template <typename>
@@ -74,8 +75,8 @@ MCTAPI Bedrock::typeid_t<CommandRegistry> Bedrock::type_id<CommandRegistry, clas
 MCTAPI Bedrock::typeid_t<CommandRegistry> Bedrock::type_id<CommandRegistry, class MobEffect const*>();
 MCTAPI Bedrock::typeid_t<CommandRegistry> Bedrock::type_id<CommandRegistry, class RelativeFloat>();
 MCTAPI Bedrock::typeid_t<CommandRegistry> Bedrock::type_id<CommandRegistry, class WildcardCommandSelector<class Actor>>();
-MCTAPI Bedrock::typeid_t<CommandRegistry> Bedrock::type_id<CommandRegistry, struct ActorDefinitionIdentifier const*>();
 
 template<> LLAPI Bedrock::typeid_t<CommandRegistry> Bedrock::type_id<CommandRegistry, CommandIntegerRange>();
+template<> LLAPI Bedrock::typeid_t<CommandRegistry> Bedrock::type_id<CommandRegistry, ActorDefinitionIdentifier const*>();
 
 // clang-format on

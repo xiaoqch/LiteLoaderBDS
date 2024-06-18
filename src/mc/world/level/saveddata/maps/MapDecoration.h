@@ -86,6 +86,12 @@ public:
     // symbol: ?getY@MapDecoration@@QEBACXZ
     MCAPI schar getY() const;
 
+    // symbol: ?load@MapDecoration@@QEAAXAEBVCompoundTag@@@Z
+    MCAPI void load(class CompoundTag const& tag);
+
+    // symbol: ?save@MapDecoration@@QEAAXAEAVCompoundTag@@@Z
+    MCAPI void save(class CompoundTag& tag);
+
     // symbol: ??1MapDecoration@@QEAA@XZ
     MCAPI ~MapDecoration();
 

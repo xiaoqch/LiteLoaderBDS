@@ -68,6 +68,7 @@ public:
 
     // Dimension inner types define
     struct PlayerReplicationStructures {
+    public:
         struct PlayerAtChunk {
             ChunkPos chunkPos;      // this+0x0
             ushort   playerIndex{}; // this+0x8
@@ -151,6 +152,7 @@ public:
     std::vector<WeakEntityRef>                   mPlayersToReplicate;    // this+0x650
     bool                                         mRunChunkGenWatchDog;   // this+0x668
 
+
 public:
     // prevent constructor by default
     Dimension& operator=(Dimension const&);
@@ -159,7 +161,6 @@ public:
 
 public:
     // NOLINTBEGIN
-    // symbol: ??1Dimension@@UEAA@XZ
     // symbol: ??1Dimension@@UEAA@XZ
     virtual ~Dimension();
 
@@ -219,77 +220,68 @@ public:
     // vIndex: 19, symbol: ?getBrightnessDependentFogColor@Dimension@@UEBA?AVColor@mce@@AEBV23@M@Z
     virtual class mce::Color getBrightnessDependentFogColor(class mce::Color const& baseColor, float brightness) const;
 
-    // vIndex: 20, symbol: ?isFoggyAt@Dimension@@UEBA_NHH@Z
-    virtual bool isFoggyAt(int x, int z) const;
-
-    // vIndex: 21, symbol: ?hasPrecipitationFog@Dimension@@UEBA_NXZ
+    // vIndex: 20, symbol: ?hasPrecipitationFog@Dimension@@UEBA_NXZ
     virtual bool hasPrecipitationFog() const;
 
-    // vIndex: 22, symbol: ?getCloudHeight@Dimension@@UEBAFXZ
+    // vIndex: 21, symbol: ?getCloudHeight@Dimension@@UEBAFXZ
     virtual short getCloudHeight() const;
 
-    // vIndex: 23, symbol: ?getDefaultBiome@Dimension@@UEBA?AVHashedString@@XZ
+    // vIndex: 22, symbol: ?getDefaultBiome@Dimension@@UEBA?AVHashedString@@XZ
     virtual class HashedString getDefaultBiome() const;
 
-    // vIndex: 24, symbol: ?mayRespawnViaBed@Dimension@@UEBA_NXZ
-    virtual bool mayRespawnViaBed() const;
-
-    // vIndex: 25, symbol: ?hasGround@Dimension@@UEBA_NXZ
+    // vIndex: 23, symbol: ?hasGround@Dimension@@UEBA_NXZ
     virtual bool hasGround() const;
 
-    // vIndex: 26, symbol: ?getSpawnPos@Dimension@@UEBA?AVBlockPos@@XZ
-    virtual class BlockPos getSpawnPos() const;
-
-    // vIndex: 27, symbol: ?getSpawnYPosition@Dimension@@UEBAHXZ
-    virtual int getSpawnYPosition() const;
-
-    // vIndex: 28, symbol: ?hasBedrockFog@Dimension@@UEAA_NXZ
-    virtual bool hasBedrockFog();
-
-    // vIndex: 29, symbol: ?getClearColorScale@Dimension@@UEAAMXZ
-    virtual float getClearColorScale();
-
-    // vIndex: 30, symbol: ?showSky@Dimension@@UEBA_NXZ
+    // vIndex: 24, symbol: ?showSky@Dimension@@UEBA_NXZ
     virtual bool showSky() const;
 
-    // vIndex: 31, symbol: ?isDay@Dimension@@UEBA_NXZ
+    // vIndex: 25, symbol: ?getSpawnPos@Dimension@@UEBA?AVBlockPos@@XZ
+    virtual class BlockPos getSpawnPos() const;
+
+    // vIndex: 26, symbol: ?getSpawnYPosition@Dimension@@UEBAHXZ
+    virtual int getSpawnYPosition() const;
+
+    // vIndex: 27, symbol: ?mayRespawnViaBed@Dimension@@UEBA_NXZ
+    virtual bool mayRespawnViaBed(void) const;
+
+    // vIndex: 28, symbol: ?isDay@Dimension@@UEBA_NXZ
     virtual bool isDay() const;
 
-    // vIndex: 32, symbol: ?getTimeOfDay@Dimension@@MEBAMHM@Z
+    // vIndex: 29, symbol: ?getTimeOfDay@Dimension@@MEBAMHM@Z
     virtual float getTimeOfDay(int time, float a) const;
 
-    // vIndex: 33, symbol: ?getSunIntensity@Dimension@@UEBAMMAEBVVec3@@M@Z
+    // vIndex: 30, symbol: ?getSunIntensity@Dimension@@UEBAMMAEBVVec3@@M@Z
     virtual float getSunIntensity(float a, class Vec3 const& viewVector, float minInfluenceAngle) const;
 
-    // vIndex: 34, symbol: ?forceCheckAllNeighChunkSavedStat@Dimension@@UEBA_NXZ
+    // vIndex: 31, symbol: ?forceCheckAllNeighChunkSavedStat@Dimension@@UEBA_NXZ
     virtual bool forceCheckAllNeighChunkSavedStat() const;
 
-    // vIndex: 35, vIndex: 34, symbol: ?sendBroadcast@Dimension@@UEAAXAEBVPacket@@PEAVPlayer@@@Z
+    // vIndex: 32, vIndex: 34, symbol: ?sendBroadcast@Dimension@@UEAAXAEBVPacket@@PEAVPlayer@@@Z
     virtual void sendBroadcast(class Packet const& packet, class Player* except);
 
-    // vIndex: 36, symbol: ?is2DPositionRelevantForPlayer@Dimension@@UEBA_NAEBVBlockPos@@AEAVPlayer@@@Z
+    // vIndex: 33, symbol: ?is2DPositionRelevantForPlayer@Dimension@@UEBA_NAEBVBlockPos@@AEAVPlayer@@@Z
     virtual bool is2DPositionRelevantForPlayer(class BlockPos const& position, class Player& player) const;
 
-    // vIndex: 37, symbol: ?isActorRelevantForPlayer@Dimension@@UEBA_NAEAVPlayer@@AEBVActor@@@Z
+    // vIndex: 34, symbol: ?isActorRelevantForPlayer@Dimension@@UEBA_NAEAVPlayer@@AEBVActor@@@Z
     virtual bool isActorRelevantForPlayer(class Player& player, class Actor const& actor) const;
 
-    // vIndex: 38, symbol: ?getLightTextureImageBuilder@Dimension@@UEBAPEAVBaseLightTextureImageBuilder@@XZ
+    // vIndex: 35, symbol: ?getLightTextureImageBuilder@Dimension@@UEBAPEAVBaseLightTextureImageBuilder@@XZ
     virtual class BaseLightTextureImageBuilder* getLightTextureImageBuilder() const;
 
-    // vIndex: 39, symbol: ?getBrightnessRamp@Dimension@@UEBAAEBVDimensionBrightnessRamp@@XZ
+    // vIndex: 36, symbol: ?getBrightnessRamp@Dimension@@UEBAAEBVDimensionBrightnessRamp@@XZ
     virtual class DimensionBrightnessRamp const& getBrightnessRamp() const;
 
-    // vIndex: 40, symbol: ?startLeaveGame@Dimension@@UEAAXXZ
+    // vIndex: 37, symbol: ?startLeaveGame@Dimension@@UEAAXXZ
     virtual void startLeaveGame();
 
-    // vIndex: 41, symbol:
+    // vIndex: 38, symbol:
     // ?_createChunkBuildOrderPolicy@Dimension@@EEAA?AV?$unique_ptr@VChunkBuildOrderPolicyBase@@U?$default_delete@VChunkBuildOrderPolicyBase@@@std@@@std@@XZ
     virtual std::unique_ptr<class ChunkBuildOrderPolicyBase> _createChunkBuildOrderPolicy();
 
-    // vIndex: 42
+    // vIndex: 39
     virtual void _upgradeOldLimboEntity(class CompoundTag& tag, ::LimboEntitiesVersion vers) = 0;
 
-    // vIndex: 43
+    // vIndex: 40
     virtual std::unique_ptr<class ChunkSource> _wrapStorageForVersionCompatibility(
         std::unique_ptr<class ChunkSource> storageSource,
         ::StorageVersion                   levelVersion
@@ -460,6 +452,9 @@ public:
 
     // symbol: ?getSunAngle@Dimension@@QEBAMM@Z
     MCAPI float getSunAngle(float a) const;
+
+    // symbol: ?getTargetMetaData@Dimension@@QEAA?AV?$shared_ptr@$$CBVLevelChunkMetaData@@@std@@XZ
+    MCAPI std::shared_ptr<class LevelChunkMetaData const> getTargetMetaData();
 
     // symbol: ?getTickingAreas@Dimension@@QEAAAEAVTickingAreaList@@XZ
     MCAPI class TickingAreaList& getTickingAreas();

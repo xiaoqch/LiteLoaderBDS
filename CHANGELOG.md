@@ -5,9 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.0] - 2024-06-12
+## [Unreleased]
 
-<span style="font-size:5em;">Farewell, BDS modders!</span>
+## [0.13.0] - 2024-06-19
+
+### Added
+
+- Adapted to BDS version 1.21.0x @Lovelylavender4
+
+### Changed
+
+- Fix Concepts (#1547)
+- Add vector helper operators
 
 ## [0.12.4] - 2024-05-31
 
@@ -530,14 +539,8 @@ First preview release.
 
 For lip and tooth-hub test only.
 
-[#1481]: https://github.com/LiteLDev/LeviLamina/issues/1481
-[#1483]: https://github.com/LiteLDev/LeviLamina/issues/1483
-[#1492]: https://github.com/LiteLDev/LeviLamina/issues/1492
-[#1499]: https://github.com/LiteLDev/LeviLamina/issues/1499
-[#1502]: https://github.com/LiteLDev/LeviLamina/issues/1502
-[#1520]: https://github.com/LiteLDev/LeviLamina/issues/1520
-
-[1.0.0]: https://github.com/LiteLDev/LeviLamina/compare/v0.12.4...v1.0.0
+[Unreleased]: https://github.com/LiteLDev/LeviLamina/compare/v0.13.0...HEAD
+[0.13.0]: https://github.com/LiteLDev/LeviLamina/compare/v0.12.4...v0.13.0
 [0.12.4]: https://github.com/LiteLDev/LeviLamina/compare/v0.12.3...v0.12.4
 [0.12.3]: https://github.com/LiteLDev/LeviLamina/compare/v0.12.2...v0.12.3
 [0.12.2]: https://github.com/LiteLDev/LeviLamina/compare/v0.12.1...v0.12.2
