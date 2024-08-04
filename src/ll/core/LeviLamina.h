@@ -1,8 +1,9 @@
 #pragma once
 
 #include "ll/api/Logger.h"
+#include "ll/api/mod/NativeMod.h"
 namespace ll {
-extern Logger                                logger;
-extern std::chrono::steady_clock::time_point severStartBeginTime;
-extern std::chrono::steady_clock::time_point severStartEndTime;
+std::shared_ptr<mod::NativeMod> const& getSelfModIns();
+Logger&                                getLogger();
+constexpr const std::string_view       selfModName = "LeviLamina";
 } // namespace ll

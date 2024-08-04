@@ -3,14 +3,15 @@
 #include <chrono>
 
 #include "ll/api/Logger.h"
+#include "ll/api/Versions.h"
 #include "ll/api/data/Version.h"
 #include "ll/api/i18n/I18n.h"
-#include "ll/api/service/ServerInfo.h"
 #include "ll/api/utils/ErrorUtils.h"
 #include "ll/api/utils/StacktraceUtils.h"
 #include "ll/api/utils/StringUtils.h"
-#include "ll/api/utils/WinUtils.h"
+#include "ll/api/utils/SystemUtils.h"
 #include "ll/core/Config.h"
+#include "ll/core/LeviLamina.h"
 
 #include <windows.h>
 
@@ -42,9 +43,9 @@ void CrashLogger::initCrashLogger() {
 
     std::wstring cmd = string_utils::str2wstr(fmt::format(
         "{} {} \"{}\"",
-        globalConfig.modules.crashLogger.externalPath,
+        getSelfModIns()->getModDir() / sv2u8sv(getLeviConfig().modules.crashLogger.externalpath),
         GetCurrentProcessId(),
-        ll::getBdsVersion().to_string()
+        ll::getGameVersion().to_string()
     ));
     if (!CreateProcess(nullptr, cmd.data(), &sa, &sa, true, 0, nullptr, nullptr, &si, &pi)) {
         crashLogger.error("Couldn't Create CrashLogger Daemon Process"_tr());
@@ -60,25 +61,25 @@ void CrashLogger::initCrashLogger() {
 }
 
 static struct CrashInfo {
-    HANDLE                                         process{};
-    HANDLE                                         thread{};
-    DWORD                                          processId{};
-    DWORD                                          threadId{};
-    std::string                                    date;
-    Logger                                         logger{"CrashLogger"};
-    std::filesystem::path                          path{};
-    decltype(ll::globalConfig.modules.crashLogger) settings{};
+    HANDLE                                            process{};
+    HANDLE                                            thread{};
+    DWORD                                             processId{};
+    DWORD                                             threadId{};
+    std::string                                       date;
+    Logger                                            logger{"CrashLogger"};
+    std::filesystem::path                             path{};
+    decltype(ll::getLeviConfig().modules.crashLogger) settings{};
 } crashInfo;
 
 static void dumpSystemInfo() {
     crashInfo.logger.info("System Info:");
-    crashInfo.logger.info("  |OS Version: {} {}", win_utils::getSystemName(), []() -> std::string {
+    crashInfo.logger.info("  |OS Version: {} {}", sys_utils::getSystemName(), []() -> std::string {
         RTL_OSVERSIONINFOW osVersionInfoW = [] {
             RTL_OSVERSIONINFOW osVersionInfoW{};
-            typedef uint(WINAPI * RtlGetVersionPtr)(PRTL_OSVERSIONINFOW);
-            HMODULE hMod = ::GetModuleHandleW(L"ntdll.dll");
+            HMODULE            hMod = ::GetModuleHandleW(L"ntdll.dll");
             if (hMod) {
-                auto fxPtr = (RtlGetVersionPtr)::GetProcAddress(hMod, "RtlGetVersion");
+                using RtlGetVersionPtr = uint(WINAPI*)(PRTL_OSVERSIONINFOW);
+                auto fxPtr             = (RtlGetVersionPtr)::GetProcAddress(hMod, "RtlGetVersion");
                 if (fxPtr != nullptr) {
                     osVersionInfoW.dwOSVersionInfoSize = sizeof(osVersionInfoW);
                     if (0 == fxPtr(&osVersionInfoW)) {
@@ -100,7 +101,7 @@ static void dumpSystemInfo() {
             osVersion += " " + wstr2str(osVersionInfoW.szCSDVersion);
         }
         return osVersion;
-    }() + (win_utils::isWine() ? " (wine)" : ""));
+    }() + (sys_utils::isWine() ? " (wine)" : ""));
     crashInfo.logger.info("  |CPU: {}", []() -> std::string {
         int cpuInfo[4] = {-1};
         __cpuid(cpuInfo, (int)0x80000000);
@@ -219,8 +220,8 @@ static LONG unhandledExceptionFilter(_In_ struct _EXCEPTION_POINTERS* e) {
     try {
         crashInfo.date                      = fmt::format("{:%Y-%m-%d_%H-%M-%S}", fmt::localtime(_time64(nullptr)));
         crashInfo.logger.playerLevel        = -2;
-        crashInfo.logger.fileLevel          = INT32_MAX;
-        crashInfo.logger.consoleLevel       = INT32_MAX;
+        crashInfo.logger.fileLevel          = std::numeric_limits<int>::max();
+        crashInfo.logger.consoleLevel       = std::numeric_limits<int>::max();
         crashInfo.logger.info.consoleFormat = {"{0} [{1}] {3}", "{:%T}.{:0>3}", "{}", "", "{}"};
         crashInfo.logger.info.style         = {
             fmt::fg(fmt::color::light_blue),
@@ -228,7 +229,7 @@ static LONG unhandledExceptionFilter(_In_ struct _EXCEPTION_POINTERS* e) {
             {},
             {},
         };
-        crashInfo.settings = ll::globalConfig.modules.crashLogger;
+        crashInfo.settings = ll::getLeviConfig().modules.crashLogger;
         crashInfo.path     = file_utils::u8path(crashInfo.settings.logPath);
         crashInfo.logger.setFile(
             u8str2str((crashInfo.path / (crashInfo.settings.logPrefix + crashInfo.date + ".log")).u8string())
@@ -244,7 +245,7 @@ static LONG unhandledExceptionFilter(_In_ struct _EXCEPTION_POINTERS* e) {
 
         fmt::print("\n");
 
-        crashInfo.logger.info("BDS Crashed! Generating Stacktrace and MiniDump...");
+        crashInfo.logger.info("Process Crashed! Generating Stacktrace and MiniDump...");
         try {
             genMiniDumpFile(e);
         } catch (...) {

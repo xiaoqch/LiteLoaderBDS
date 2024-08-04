@@ -2,7 +2,7 @@
 
 ## 开始之前
 
-我们强烈推荐你使用 [lip](https://docs.lippkg.com/zh/install/) 来进行插件安装。如果您尚未在本地安装，请前往查看。
+我们强烈推荐你使用 [lip](https://docs.lippkg.com/zh/install/) 来进行模组安装。如果您尚未在本地安装，请前往查看。
 
 以下内容针对使用 lip 的情况下进行快速入门。
 
@@ -11,16 +11,22 @@
 
 ## 配置代理或镜像
 
-如果你有**代理**可用，使用以下命令配置代理（支持socks5，http，https）：
+如果你有**代理服务器**可用，使用以下命令配置代理（支持socks5，http，https）：
 
 ```sh
 lip config ProxyURL <proxy-url>
 ```
 
-例如你的**代理**地址是 `http://127.0.0.1:8080`，你可以使用以下命令配置代理：
+例如你的**代理服务器**地址是 `http://127.0.0.1:8080`，你可以使用以下命令配置代理：
 
 ```sh
 lip config ProxyURL http://127.0.0.1:8080
+```
+
+如果你在没有代理服务器的情况下错误地配置了代理服务器，可以使用以下命令取消配置：
+
+```sh
+lip config ProxyURL ""
 ```
 
 如果你本地没有代理可用，你可以使用以下命令配置**镜像源**：
@@ -43,7 +49,8 @@ lip config GitHubMirrorURL https://github.bibk.top
 
 如果你在上一步配置了代理，你可以跳过这一步，因为LeviLamina安装过程中会自动安装BDS。
 
-否则，请手动在Minecraft官网下载BDS，然后把压缩文件丢到`.cache/bdsdown`目录下。
+否则，请手动在Minecraft官网下载BDS，然后把压缩文件丢到`~/.cache/bdsdown`目录下，如果该目录不存在请手动创建。  
+> `~`指的是你的用户目录，例如`C:\Windows\Users\Administrator\`(在Windows上) `/home/Debian`(在Linux上)
 
 ## 安装 LeviLamina
 
@@ -70,15 +77,15 @@ lip install github.com/LiteLDev/LeviLamina
 
 ## 更新 LeviLamina
 
-不要在同一位置更新 LeviLamina，这样做会影响数据安全。相反，我们建议创建一个新目录，在那里安装 LeviLamina 的新版本，并随后将 `worlds` 目录从旧位置复制到新位置。然后，按照插件开发者提供的说明迁移您正在使用的插件的配置文件和数据文件。
+不要在同一位置更新 LeviLamina，这样做会影响数据安全。相反，我们建议创建一个新目录，在那里安装 LeviLamina 的新版本，并随后将 `worlds` 目录从旧位置复制到新位置。然后，按照模组开发者提供的说明迁移您正在使用的模组的配置文件和数据文件。
 
-## 查找插件
+## 查找模组
 
-在安装插件之前，您需要找到想要安装的插件。最好的地方是 [lip index](https://www.lippkg.com)，即 lip 的官方插件注册表，但您也可以在 [我们的论坛](https://bbs.liteldev.com/) 和其他网络上找到许多插件。
+在安装模组之前，您需要找到想要安装的模组。最好的地方是 [lip index](https://www.lippkg.com)，即 lip 的官方模组注册表，但您也可以在 [MineBBS](https://www.minebbs.com/) 和其他网站上找到许多模组。
 
-## 安装插件
+## 安装模组
 
-对于大多数插件，特别是在 lip index 上的插件，安装就像运行 `lip install <plugin>` 一样简单。
+对于大多数模组，特别是在 lip index 上的模组，安装就像运行 `lip install <mod>` 一样简单。
 
 例如，要安装 [levianticheat](https://github.com/LiteLDev/LeviAntiCheat)，您可以运行：
 
@@ -92,26 +99,26 @@ lip install github.com/LiteLDev/LeviAntiCheat
 lip install github.com/LiteLDev/LeviAntiCheat@1.0.0
 ```
 
-但是，有些插件可能需要额外的安装步骤。请按照插件开发者提供的说明安装您正在使用的插件。
+但是，有些模组可能需要额外的安装步骤。请按照模组开发者提供的说明安装您正在使用的模组。
 
 ## 故障排除
 
-如果问题发生在游戏过程中，解决安装插件的故障排除的第一步是检查服务器的日志。您服务器的最新日志将存储在 `logs/LeviLamina-latest.log` 文件中。您可能需要在该文件的开头附近滚动以查看插件何时被加载。
+如果问题发生在游戏过程中，解决安装模组的故障排除的第一步是检查服务器的日志。您服务器的最新日志将存储在 `logs/server-latest.log` 文件中。您可能需要在该文件的开头附近滚动以查看模组何时被加载。
 
 请查看 [FAQ](faq.md) 获取常见问题的答案。
 
 如果您看到类似以下内容：
 
 ```plaintext
-ERROR: failed to parse and download specifier string list: failed to install specifier: failed to download from all Go proxies: failed to download from all Go proxies: [failed to download file: cannot download file (HTTP 404 Not Found): https://goproxy.io/github.com/tooth-hub/myplugin/@v/v1.1.0.zip]
+ERROR: failed to parse and download specifier string list: failed to install specifier: failed to download from all Go proxies: failed to download from all Go proxies: [failed to download file: cannot download file (HTTP 404 Not Found): https://goproxy.io/github.com/tooth-hub/mymod/@v/v1.1.0.zip]
 ```
 
-这意味着您尝试安装的插件版本不存在。您应该仔细检查您输入的插件名称和版本是否正确。
+这意味着您尝试安装的模组版本不存在。您应该仔细检查您输入的模组名称和版本是否正确。
 
 如果您看到类似以下内容：
 
 ```plaintext
-ERROR: failed to resolve dependencies: installed tooth github.com/tooth-hub/otherplugin does not match dependency 1.20.41
+ERROR: failed to resolve dependencies: installed tooth github.com/tooth-hub/othermod does not match dependency 1.20.41
 ```
 
-这意味着您尝试安装的插件版本与另一个插件、LeviLamina 或 BDS 的已安装版本不兼容。尝试安装插件的另一个版本或更新已安装的插件。
+这意味着您尝试安装的模组版本与另一个模组、LeviLamina 或 BDS 的已安装版本不兼容。尝试安装模组的另一个版本或更新已安装的模组。

@@ -5,7 +5,9 @@
 #include "ll/api/io/FileUtils.h"
 #include "ll/api/utils/ErrorUtils.h"
 #include "ll/api/utils/StringUtils.h"
-#include "ll/api/utils/WinUtils.h"
+#include "ll/api/utils/SystemUtils.h"
+
+#include "pl/SymbolProvider.h"
 
 #include "fmt/format.h"
 #include "windows.h"
@@ -92,7 +94,7 @@ public:
                         (void)debugControl->WaitForEvent(0, INFINITE);
                     }
                     (void
-                    )debugSymbols->AppendSymbolPathWide(win_utils::getModulePath(nullptr).value().parent_path().c_str()
+                    )debugSymbols->AppendSymbolPathWide(sys_utils::getModulePath(nullptr).value().parent_path().c_str()
                     );
                     (void)debugSymbols->RemoveSymbolOptions(
                         SYMOPT_NO_CPP | SYMOPT_LOAD_ANYTHING | SYMOPT_NO_UNQUALIFIED_LOADS | SYMOPT_IGNORE_NT_SYMPATH
@@ -205,6 +207,24 @@ uintptr_t tryGetSymbolAddress(std::string_view symbol) {
 
 StackTraceEntryInfo getInfo(std::stacktrace_entry const& entry) {
     DbgEngData data;
+
+    static auto processRange = sys_utils::getImageRange();
+
+    if (&*processRange.begin() <= entry.native_handle() && entry.native_handle() < &*processRange.end()) {
+        size_t length{};
+        uint   disp{};
+        auto   str = pl::symbol_provider::pl_lookup_symbol_disp(entry.native_handle(), &length, &disp);
+        if (length) {
+            static auto processName = sys_utils::getModuleFileName(nullptr);
+            std::string demangledName(0x1000, '\0');
+            size_t      strLength =
+                UnDecorateSymbolName(str[0], demangledName.data(), (DWORD)demangledName.size(), UNDNAME_NAME_ONLY);
+            demangledName.resize(strLength);
+            StackTraceEntryInfo res{disp, processName + '!' + demangledName};
+            pl::symbol_provider::pl_free_lookup_result(str);
+            return res;
+        }
+    }
     if (!data.tryInit()) {
         return {};
     }
@@ -212,13 +232,8 @@ StackTraceEntryInfo getInfo(std::stacktrace_entry const& entry) {
 }
 
 std::string toString(std::stacktrace_entry const& entry) {
-    std::string res = fmt::format("at: 0x{:0>12X}", (uint64)entry.native_handle());
-    DbgEngData  data;
-    if (!data.tryInit()) {
-        return res;
-    }
-
-    auto [displacement, name, line, file] = data.getInfo(entry.native_handle());
+    std::string res                       = fmt::format("at: 0x{:0>12X}", (uint64)entry.native_handle());
+    auto [displacement, name, line, file] = getInfo(entry);
     std::string module;
     std::string function;
     if (auto pos = name.find('!'); pos != std::string_view::npos) {

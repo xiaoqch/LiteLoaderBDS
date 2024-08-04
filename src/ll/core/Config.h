@@ -7,7 +7,7 @@
 
 #include "ll/api/base/Macro.h"
 #include "ll/api/reflection/Dispatcher.h"
-#include "ll/api/utils/WinUtils.h"
+#include "ll/api/utils/SystemUtils.h"
 #include "ll/core/tweak/ForceEnableCheatCommands.h"
 #include "ll/core/tweak/SimpleServerLogger.h"
 #include "ll/core/tweak/Statistics.h"
@@ -18,19 +18,14 @@ namespace ll {
 
 struct LeviConfig {
 
-    int version = 23;
+    int version = 26;
 
     std::string language = "system";
-    struct {
-        bool colorLog = win_utils::isStdoutSupportAnsi();
-        int  logLevel = 4;
-    } logger{};
-
     struct {
         struct {
             bool        enabled      = true;
             bool        useBuiltin   = false;
-            std::string externalPath = R"(.\plugins\LeviLamina\CrashLogger.exe)";
+            std::string externalpath = "CrashLogger.exe";
             std::string logPath      = R"(.\logs\crash)";
             std::string dumpPrefix   = "minidump_";
             std::string logPrefix    = "trace_";
@@ -55,7 +50,7 @@ struct LeviConfig {
             CmdSetting crashCommand{false};
             CmdSetting versionCommand{};
             CmdSetting memstatsCommand{true, CommandPermissionLevel::Host};
-            CmdSetting pluginManageCommand{true, CommandPermissionLevel::Admin};
+            CmdSetting modManageCommand{true, CommandPermissionLevel::Admin};
         } command{};
 
         bool checkRunningBDS = true;
@@ -67,9 +62,7 @@ struct LeviConfig {
     } modules{};
 };
 
-extern LeviConfig globalConfig;
-
-bool loadLeviConfig();
+LeviConfig& getLeviConfig();
 
 bool saveLeviConfig();
 

@@ -5,7 +5,7 @@
  *
  * Create Logger
  * @code
- * Logger logger("MyPlugin"); // Create a logger (default: only log to console)
+ * Logger logger("MyMod"); // Create a logger (default: only log to console)
  * @endcode
  * Use Logger
  * @code
@@ -89,7 +89,6 @@ public:
     int                          consoleLevel = -1;
     int                          fileLevel    = -1;
     int                          playerLevel  = -1;
-    bool                         ignoreConfig = false;
 
     OutputStream debug;
     OutputStream info;
@@ -97,7 +96,9 @@ public:
     OutputStream error;
     OutputStream fatal;
 
-    LLNDAPI explicit Logger(std::string_view title = __builtin_FUNCTION(), bool ignoreConfig = false);
+    LLNDAPI explicit Logger(std::string_view title = __builtin_FUNCTION());
+
+    LLNDAPI Logger(std::string_view, bool); // TODO: remove in release
 
     ~Logger() { resetFile(); }
 

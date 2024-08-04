@@ -17,20 +17,23 @@
 #include "fmt/color.h"
 #include "fmt/core.h"
 
+#include "ll/api/Config.h"
 #include "ll/api/utils/ErrorUtils.h"
 #include "ll/api/utils/StringUtils.h"
-#include "ll/api/utils/WinUtils.h"
+#include "ll/api/utils/SystemUtils.h"
 #include "ll/core/Config.h"
+
+#include "pl/Config.h"
 
 using namespace ll::string_utils;
 
 namespace ll {
-static std::ofstream            defaultFile;
+static std::ofstream            defaultFile(file_utils::u8path(pl::pl_log_path), std::ios::out);
 static Logger::player_output_fn defaultPlayerOutputCallback;
 
 static bool checkLogLevel(int level, int outLevel) {
     if (level >= outLevel) return true;
-    if (level == -1 && ll::globalConfig.logger.logLevel >= outLevel) return true;
+    if (level == -1 && pl::pl_log_level >= outLevel) return true;
     return false;
 }
 
@@ -38,9 +41,9 @@ void OutputStream::print(std::string_view s) const noexcept {
     try {
         auto lock = Logger::lock();
 
-        auto [time, ms] = win_utils::getLocalTime();
+        auto [time, ms] = sys_utils::getLocalTime();
 
-        if (logger->ignoreConfig || checkLogLevel(logger->consoleLevel, level)) {
+        if (checkLogLevel(logger->consoleLevel, level)) {
             std::string str = fmt::format(
                 fmt::runtime(consoleFormat[0]),
                 applyTextStyle(style[0], fmt::format(fmt::runtime(consoleFormat[1]), time, ms)),
@@ -48,12 +51,11 @@ void OutputStream::print(std::string_view s) const noexcept {
                 applyTextStyle(style[2], fmt::format(fmt::runtime(consoleFormat[3]), logger->title)),
                 applyTextStyle(style[3], fmt::format(fmt::runtime(consoleFormat[4]), replaceMcToAnsiCode(s)))
             );
-            if (!logger->ignoreConfig && !ll::globalConfig.logger.colorLog) {
+            if (!(bool)pl::pl_color_log) {
                 str = removeEscapeCode(str);
             }
             fmt::print("{}\n", str);
         }
-        if (logger->ignoreConfig) return;
         if (logger->getFile().is_open() && checkLogLevel(logger->fileLevel, level)) {
             logger->getFile() << removeEscapeCode(fmt::format(
                 fmt::runtime(fileFormat[0]),
@@ -109,9 +111,8 @@ OutputStream::OutputStream(
   playerFormat(playerFormat),
   playerOutputCallback(nullptr) {}
 
-Logger::Logger(std::string_view title, bool ignoreConfig)
+Logger::Logger(std::string_view title)
 : title(title),
-  ignoreConfig(ignoreConfig),
   debug(OutputStream{
       *this,
       "DEBUG",

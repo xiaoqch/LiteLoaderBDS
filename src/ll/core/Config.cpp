@@ -8,43 +8,42 @@
 namespace ll {
 using namespace i18n_literals;
 
-static constexpr std::u8string_view leviConfigPath = u8R"(plugins\LeviLamina\config\config.json)";
-
-struct LeviConfig globalConfig;
-
-bool loadLeviConfig() {
-    try {
-        if (ll::config::loadConfig(globalConfig, leviConfigPath)) {
-            return true;
+LeviConfig& getLeviConfig() {
+    static LeviConfig config = []() {
+        LeviConfig res;
+        try {
+            if (ll::config::loadConfig(res, getSelfModIns()->getConfigDir() / u8"config.json")) {
+                return res;
+            }
+        } catch (...) {
+            getLogger().error("LeviConfig load failed"_tr());
+            ll::error_utils::printCurrentException(getLogger());
         }
-    } catch (...) {
-        logger.error("LeviConfig load failed"_tr());
-        ll::error_utils::printCurrentException(logger);
-    }
-    try {
-        if (ll::config::saveConfig(globalConfig, leviConfigPath)) {
-            logger.warn("LeviConfig rewrite successfully"_tr());
-        } else {
-            logger.error("LeviConfig rewrite failed"_tr());
-            return false;
+        try {
+            if (ll::config::saveConfig(res, getSelfModIns()->getConfigDir() / u8"config.json")) {
+                getLogger().warn("LeviConfig rewrite successfully"_tr());
+            } else {
+                getLogger().error("LeviConfig rewrite failed"_tr());
+            }
+        } catch (...) {
+            getLogger().error("LeviConfig rewrite failed"_tr());
+            ll::error_utils::printCurrentException(getLogger());
         }
-    } catch (...) {
-        logger.error("LeviConfig rewrite failed"_tr());
-        ll::error_utils::printCurrentException(logger);
-    }
-    return false;
+        return res;
+    }();
+    return config;
 }
 
 bool saveLeviConfig() {
     bool res{};
     try {
-        res = ll::config::saveConfig(globalConfig, leviConfigPath);
+        res = ll::config::saveConfig(getLeviConfig(), getSelfModIns()->getConfigDir() / u8"config.json");
     } catch (...) {
         res = false;
-        ll::error_utils::printCurrentException(logger);
+        ll::error_utils::printCurrentException(getLogger());
     }
     if (!res) {
-        logger.error("LeviConfig failed to save"_tr());
+        getLogger().error("LeviConfig failed to save"_tr());
         return false;
     }
     return true;

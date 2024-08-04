@@ -23,8 +23,10 @@ public:
         }
     }
     Dispatcher& operator=(Storage const& other) {
-        storage = other;
-        call();
+        if (&other != this) {
+            storage = other;
+            call();
+        }
         return *this;
     }
     Dispatcher& operator=(Storage&& other) {
@@ -35,6 +37,6 @@ public:
 
     operator Storage const&() const { return storage; } // NOLINT
 
-    operator Storage&() const { return storage; } // NOLINT
+    operator Storage&() { return storage; } // NOLINT
 };
 } // namespace ll::reflection

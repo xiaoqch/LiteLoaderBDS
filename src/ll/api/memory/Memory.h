@@ -2,9 +2,11 @@
 
 #include <functional>
 #include <memory>
+#include <span>
 #include <string>
 #include <type_traits>
 #include <vector>
+
 
 #include "ll/api/base/FixedString.h"
 #include "ll/api/base/Macro.h"
@@ -62,7 +64,7 @@ LLNDAPI FuncPtr resolveSymbol(char const* symbol);
 LLNDAPI FuncPtr resolveSymbol(std::string_view symbol, bool disableErrorOutput);
 
 /**
- * @brief resolve signature to function pointer from bds image
+ * @brief resolve signature to function pointer from process image
  * @param signature signature
  * @return function pointer
  */
@@ -74,7 +76,7 @@ LLNDAPI FuncPtr resolveSignature(std::string_view signature);
  * @param range search range
  * @return function pointer
  */
-LLNDAPI FuncPtr resolveSignature(std::string_view signature, std::span<uchar> range);
+LLNDAPI FuncPtr resolveSignature(std::string_view signature, std::span<std::byte> range);
 
 /**
  * @brief lookup symbol name of a function address
@@ -176,7 +178,7 @@ template <template <class> class P, class T>
 }
 
 template <FixedString symbol>
-inline FuncPtr symbolCache = resolveSymbol(symbol);
+inline FuncPtr symbolCache = resolveSymbol(symbol, false);
 
 template <FixedString signature>
 inline FuncPtr signatureCache = resolveSignature(signature);

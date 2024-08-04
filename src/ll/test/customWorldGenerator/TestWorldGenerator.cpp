@@ -3,7 +3,6 @@
 #include "ll/api/memory/Memory.h"
 #include "ll/api/service/Bedrock.h"
 #include "ll/core/LeviLamina.h"
-#include "ll/test/customWorldGenerator/MyFlatWorldGenerator.hpp"
 #include "mc/world/level/dimension/OverworldDimension.h"
 #include "mc/world/level/levelgen/structure/StructureSetRegistry.h"
 #include "mc/world/level/levelgen/structure/VillageFeature.h"
@@ -44,7 +43,7 @@
 //     // Json::Value  layer;
 //     // Json::Reader reader;
 //     // reader.parse(layerstr, layer, 0);
-//     // ll::logger.warn("Superflat worlds will be created based on the following option:{}", layer.toStyledString());
+//     // ll::getLogger().warn("Superflat worlds will be created based on the following option:{}", layer.toStyledString());
 //     // return std::make_unique<MyFlatWorldGenerator>(*this, level.getSeed(), layer);
 //
 //     std::unique_ptr<WorldGenerator> worldGenerator;
@@ -82,5 +81,5 @@
 //     class Random&            random,
 //     class ChunkPos const&    pos
 //) {
-//     ll::logger.info(".");
+//     ll::getLogger().info(".");
 // }

@@ -5,6 +5,8 @@
 #include "ll/api/data/KeyValueDB.h"
 #include "ll/api/event/EventBus.h"
 #include "ll/api/event/player/PlayerJoinEvent.h"
+#include "ll/api/mod/Mod.h"
+#include "ll/core/LeviLamina.h"
 
 #include "mc/nbt/CompoundTag.h"
 
@@ -15,7 +17,7 @@ public:
     std::unordered_map<mce::UUID, std::shared_ptr<PlayerInfoEntry>>        uuids;
     std::unordered_map<std::string_view, std::shared_ptr<PlayerInfoEntry>> xuids;
     std::unordered_map<std::string_view, std::shared_ptr<PlayerInfoEntry>> names;
-    data::KeyValueDB   storage{u8"plugins/LeviLamina/data/playerinfo"};
+    data::KeyValueDB   storage{getSelfModIns()->getDataDir() / u8"playerinfo"};
     event::ListenerPtr listener;
 
     void addPlayer(mce::UUID uuid, std::string xuid, std::string name) {
@@ -37,8 +39,8 @@ public:
         std::lock_guard lock(mutex);
         storage.iter([this](std::string_view key, std::string_view value) {
             auto uuid = mce::UUID(key);
-            auto nbt  = CompoundTag::fromBinaryNbt(value);
-            addPlayer(uuid, nbt->at("xuid"), nbt->at("name"));
+            auto nbt  = CompoundTag::fromBinaryNbt(value).value();
+            addPlayer(uuid, nbt["xuid"], nbt["name"]);
             return true;
         });
         listener =
